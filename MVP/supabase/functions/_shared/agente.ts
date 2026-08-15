@@ -327,3 +327,104 @@ export async function responder(
 
   return "Me enredé con eso. ¿Me lo puedes decir de nuevo, más simple?";
 }
+
+// ── El comando "Botikin" ────────────────────────────────────
+// Escribir "Botikin" a secas muestra el botiquín completo. Es una consulta
+// con salida fija, así que NO pasa por el modelo: contesta al instante y no
+// cuesta un peso. El agente igual tiene el inventario en su contexto, así
+// que si preguntan "¿qué tengo?" en medio de una conversación, responde solo.
+
+const SIN_TILDES = (s: string) =>
+  s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").trim();
+
+export const esComandoBotikin = (texto: string) => SIN_TILDES(texto) === "botikin";
+
+/** Hoy en Chile, como AAAA-MM-DD. El reloj vive en un solo lugar. */
+function hoyEnChile(): string {
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: "America/Santiago",
+    year: "numeric", month: "2-digit", day: "2-digit",
+  }).format(new Date());
+}
+
+const MESES = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio",
+               "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
+
+/** Las unidades no se pluralizan igual: "60 mL" pero "16 comprimidos".
+ *  Las de medida son invariables; las contables llevan su plural. */
+const PLURALES: Record<string, string> = {
+  comprimido: "comprimidos", cápsula: "cápsulas", capsula: "cápsulas",
+  sobre: "sobres", gota: "gotas", ampolla: "ampollas", supositorio: "supositorios",
+  parche: "parches", inhalación: "inhalaciones", inhalacion: "inhalaciones",
+  aplicación: "aplicaciones", aplicacion: "aplicaciones",
+  // invariables: mL, mg, g, dosis, puff, spray
+};
+
+function unidad(cantidad: number, u: string): string {
+  if (cantidad === 1) return u;
+  return PLURALES[u.toLowerCase()] ?? u;
+}
+
+/** El semáforo del PRD 07: 30 días de aviso, no 7. */
+function estado(vence: string | null, hoy: string) {
+  if (!vence) return { marca: "", nota: "sin fecha de vencimiento", orden: 2 };
+  const dias = Math.round((Date.parse(vence) - Date.parse(hoy)) / 864e5);
+  const [a, m] = vence.split("-");
+  const cuando = `${m}/${a}`;
+  if (dias < 0) return { marca: "⚠️ ", nota: `venció ${cuando}`, orden: 0 };
+  if (dias <= 30) return { marca: "⚠️ ", nota: `vence en ${dias} día${dias === 1 ? "" : "s"}`, orden: 1 };
+  return { marca: "", nota: `vence ${cuando}`, orden: 3 };
+}
+
+export async function verBotiquin(db: SupabaseClient, hogar: string): Promise<string> {
+  const { data } = await db.from("medicamentos")
+    .select("cantidad, unidad, fecha_vencimiento, marca_comprada, " +
+            "productos(principio_activo, concentracion, forma_farmaceutica), " +
+            "integrantes(nombre)")
+    .eq("hogar_id", hogar).eq("estado", "vigente");
+
+  if (!data || data.length === 0) {
+    return "No tienes nada registrado todavía.\n\n" +
+           "Mándame una foto de cualquier caja que tengas a mano y la guardo — " +
+           "con eso me basta para empezar.";
+  }
+
+  const hoy = hoyEnChile();
+
+  // Agrupamos por persona: un botiquín familiar sin nombres no sirve de nada.
+  const porPersona = new Map<string, string[]>();
+  const filas = data.map((m) => {
+    const p = m.productos as { principio_activo: string; concentracion: string; forma_farmaceutica: string } | null;
+    const st = estado(m.fecha_vencimiento, hoy);
+    const nombre = p
+      ? `${p.principio_activo[0].toUpperCase()}${p.principio_activo.slice(1)} ${p.concentracion}`
+      : (m.marca_comprada || "medicamento");
+    const cantidad = Number(m.cantidad) % 1 === 0 ? Number(m.cantidad) : m.cantidad;
+    return {
+      quien: (m.integrantes as { nombre: string } | null)?.nombre ?? "De la casa",
+      linea: `• ${st.marca}${nombre} — ${cantidad} ${unidad(Number(m.cantidad), m.unidad)} · ${st.nota}`,
+      orden: st.orden,
+    };
+  });
+
+  // Lo urgente arriba: primero lo vencido, después lo que vence pronto.
+  filas.sort((a, b) => a.orden - b.orden);
+  for (const f of filas) {
+    if (!porPersona.has(f.quien)) porPersona.set(f.quien, []);
+    porPersona.get(f.quien)!.push(f.linea);
+  }
+
+  const bloques = [...porPersona.entries()]
+    .sort(([a], [b]) => (a === "De la casa" ? 1 : b === "De la casa" ? -1 : a.localeCompare(b)))
+    .map(([quien, lineas]) => `*${quien}*\n${lineas.join("\n")}`);
+
+  const urgentes = filas.filter((f) => f.orden <= 1).length;
+  const pie = urgentes
+    ? `\n\n⚠️ ${urgentes} necesita${urgentes === 1 ? "" : "n"} atención. ` +
+      `Lo vencido va a punto limpio de farmacia, nunca al WC ni a la basura.`
+    : "";
+
+  const d = new Date(hoy + "T12:00:00");
+  return `Tienes los siguientes medicamentos:\n\n${bloques.join("\n\n")}` + pie +
+         `\n\n_Al ${d.getDate()} de ${MESES[d.getMonth()]}_`;
+}

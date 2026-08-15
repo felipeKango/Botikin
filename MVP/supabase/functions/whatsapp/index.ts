@@ -7,7 +7,7 @@
 // carácter en soul.md. Si mañana cambia el proveedor de WhatsApp, se reescribe
 // este archivo y nada más.
 
-import { admin, responder } from "../_shared/agente.ts";
+import { admin, esComandoBotikin, responder, verBotiquin } from "../_shared/agente.ts";
 
 const KAPSO = "https://api.kapso.ai";
 
@@ -165,6 +165,18 @@ Deno.serve(async (req) => {
       { hogar_id: hogar.id, ultimo_mensaje_usuario: new Date().toISOString() },
       { onConflict: "hogar_id" },
     );
+
+    // "Botikin" a secas es un comando, no una conversación: sale sin modelo.
+    const soloTexto = m.text?.body ?? "";
+    if (esComandoBotikin(soloTexto)) {
+      const vista = await verBotiquin(db, hogar.id);
+      await enviar(telefono, vista);
+      await db.from("mensajes").insert([
+        { hogar_id: hogar.id, direccion: "entrante", tipo: "texto", texto: soloTexto, wamid: m.id },
+        { hogar_id: hogar.id, direccion: "saliente", tipo: "texto", texto: vista },
+      ]);
+      return new Response("comando", { status: 200 });
+    }
 
     // Armamos la entrada: texto, foto, o ambos.
     const entrada: Record<string, unknown>[] = [];

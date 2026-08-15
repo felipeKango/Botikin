@@ -51,3 +51,53 @@ Ese mensaje abre la ventana y todo lo que siga en 24 h es texto libre y gratis.
   así que la deduplicación automática de la base no los toma. El agente sí
   avisa de los duplicados que encuentra por coincidencia exacta.
 - Las tomas y el cron diario de vencimientos (PRD 06 y 07)
+
+## El comando `Botikin`
+
+Escribir **"Botikin"** a secas devuelve el botiquín completo. Es una consulta
+con salida fija, así que **no pasa por el modelo**: contesta al instante y no
+cuesta tokens. Acepta mayúsculas, minúsculas y tildes.
+
+Vacío:
+
+```
+No tienes nada registrado todavía.
+
+Mándame una foto de cualquier caja que tengas a mano y la guardo —
+con eso me basta para empezar.
+```
+
+Con contenido: agrupado por persona, **lo urgente primero**, y la fecha de
+corte al pie para que se entienda contra qué día está calculado.
+
+```
+Tienes los siguientes medicamentos:
+
+*Bruno*
+• ⚠️ Paracetamol 100 mg/mL — 60 mL · vence en 21 días
+
+*Rosa*
+• Losartán 50 mg — 30 comprimidos · vence 03/2027
+
+*De la casa*
+• ⚠️ Paracetamol 500 mg — 16 comprimidos · venció 07/2026
+• Paracetamol 500 mg — 8 comprimidos · sin fecha de vencimiento
+
+⚠️ 2 necesitan atención. Lo vencido va a punto limpio de farmacia,
+nunca al WC ni a la basura.
+
+_Al 15 de agosto_
+```
+
+Detalles que importan y no son obvios:
+
+- **Por principio activo, no por marca.** La lista dice "Paracetamol 500 mg",
+  no "Kitadol": es el mismo criterio con que se detectan los duplicados, y así
+  las dos cajas de paracetamol de arriba se ven como lo que son.
+- **Ventana de 30 días**, la del PRD 07 — no los 7 de la app anterior.
+- **Sin fecha no es lo mismo que vigente.** Un medicamento sin vencimiento se
+  muestra tal cual, sin ⚠️ pero sin fingir que está bien.
+- **Las unidades se pluralizan como corresponde:** "60 mL", no "60 mLs".
+- El agente igual tiene el inventario en su contexto, así que preguntar
+  "¿qué tengo?" en medio de una conversación también funciona — con sus
+  palabras, no con este formato.
