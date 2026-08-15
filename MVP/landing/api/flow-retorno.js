@@ -5,6 +5,7 @@
 // servidor a servidor; acá solo leemos el resultado.
 
 import { flowPost } from "./_flow.js";
+import { enviarCodigo } from "./_correo.js";
 
 const SB   = process.env.SUPABASE_URL;
 const SKEY = process.env.SUPABASE_SERVICE_KEY;
@@ -76,9 +77,21 @@ export default async function handler(req, res) {
 
     const codigo = await rpc("issue_access_code", { p_email: p.payer, p_source: "flow" });
 
+    // El correo es un respaldo del código que ya se ve en pantalla: si
+    // falla, la persona igual queda activa. Marcamos "enviado" solo cuando
+    // de verdad salió, para que el panel no mienta.
+    const correo = await enviarCodigo({
+      email: p.payer,
+      nombre: (() => { try { return JSON.parse(p.optional ?? "{}").nombre; } catch { return ""; } })(),
+      codigo: codigo.code,
+      expira: codigo.expires_at,
+    });
+    if (correo.enviado) await rpc("mark_access_code_sent", { p_code: codigo.code });
+    else console.warn("correo no enviado:", correo.motivo);
+
     return res.status(200).send(pagina("Listo", `
       <h1>Tu cuenta está activa</h1>
-      <p>Este es tu código de acceso. También te llega por correo.</p>
+      <p>Este es tu código de acceso. ${correo.enviado ? "También te lo mandamos a tu correo." : "Anótalo: guárdalo antes de cerrar esta página."}</p>
       <div class="codigo">${codigo.code}</div>
       <ol class="pasos">
         <li>Abre WhatsApp y escríbele a <b>+1 201 801 8270</b></li>
