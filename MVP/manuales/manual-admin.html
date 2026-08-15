@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="es-CL">
+<head>
+<meta charset="UTF-8">
+<title>Botikin · Manual del orquestador</title>
+<style>
+  @page { size: A4; margin: 18mm 16mm 16mm; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:"Helvetica Neue",Helvetica,Arial,sans-serif; color:#2B1114;
+         line-height:1.6; font-size:10.5pt; }
+  .portada { height:238mm; display:flex; flex-direction:column; justify-content:center;
+             page-break-after:always; }
+  .portada img.logo { width:78px; border-radius:20px; margin-bottom:26px; }
+  .portada h1 { font-size:34pt; line-height:1.05; letter-spacing:-.02em; font-weight:800;
+                max-width:14ch; margin-bottom:16px; }
+  .portada p { font-size:13pt; color:#6B5A54; max-width:46ch; }
+  .portada .pie { margin-top:auto; font-size:9pt; color:#8A7A72; }
+  h2 { font-size:17pt; letter-spacing:-.015em; font-weight:800; margin:0 0 4px; padding-top:6mm; }
+  h2 .n { color:#C1121F; margin-right:8px; }
+  h3 { font-size:11.5pt; font-weight:700; margin:15px 0 4px; }
+  p { margin-bottom:9px; }
+  .lead { color:#6B5A54; margin-bottom:14px; }
+  section { margin-bottom:8mm; }
+  h2 { page-break-after:avoid; }
+  .caja, .chat, .dos, table, pre, .flujo { page-break-inside:avoid; }
+  .caja { background:#F7F1E6; border-radius:11px; padding:14px 17px; margin:12px 0; }
+  .caja.roja { background:#FCEDEE; border-left:4px solid #C1121F; border-radius:0 11px 11px 0; }
+  .caja.ambar { background:#FDF5E7; border-left:4px solid #D99A2B; border-radius:0 11px 11px 0; }
+  ol, ul { margin:8px 0 8px 20px; }
+  li { margin-bottom:6px; }
+  img.foto { max-width:100%; border-radius:9px; border:1px solid #E4D9C8; margin:9px 0; }
+  .pie-img { font-size:8.5pt; color:#8A7A72; margin:-4px 0 12px; }
+  table { width:100%; border-collapse:collapse; font-size:9.5pt; margin:10px 0; }
+  th { text-align:left; font-size:8.5pt; text-transform:uppercase; letter-spacing:.08em;
+       color:#8A7A72; padding:0 8px 6px; border-bottom:1px solid #E4D9C8; }
+  td { padding:7px 8px; border-top:1px solid #E4D9C8; vertical-align:top; }
+  code, pre { font-family:"SF Mono",Menlo,Consolas,monospace; }
+  code { background:#F0E6D6; padding:1px 5px; border-radius:4px; font-size:9pt; }
+  pre { background:#2B1114; color:#FBF3E7; padding:12px 15px; border-radius:9px;
+        font-size:8.5pt; line-height:1.55; overflow-x:auto; margin:10px 0;
+        white-space:pre-wrap; word-break:break-all; }
+  .flujo { background:#F7F1E6; border-radius:11px; padding:15px 18px; margin:12px 0;
+           font-family:"SF Mono",Menlo,monospace; font-size:8.5pt; line-height:1.75;
+           white-space:pre; }
+  .luz { display:inline-block; width:9px; height:9px; border-radius:50%; margin-right:5px; }
+  .rojo { background:#C1121F } .ambar { background:#D99A2B } .gris { background:#B5A99F }
+</style>
+</head>
+<body>
+
+<div class="portada">
+  <img class="logo" src="img/avatar.png" alt="">
+  <h1>Manual del orquestador</h1>
+  <p>Cómo está armado Botikin, cómo mirar si está sano, y qué hacer cuando algo
+     se cae. Escrito para quien lo opera.</p>
+  <div class="pie">Uso interno · Botikin · Santiago de Chile</div>
+</div>
+
+<section>
+  <h2><span class="n">1</span>Cómo está armado</h2>
+  <p class="lead">Cinco piezas. Cada una puede fallar sola, y el panel te dice cuál.</p>
+
+  <div class="flujo">botikin.app          la web y la página de activación   (Vercel)
+   │
+   ├─ Flow             cobra los $3.990                   (flow.cl)
+   ├─ SMTP             manda el código por correo         (GoDaddy)
+   │
+   ▼
+Kapso                  recibe y envía los WhatsApp        (+1 201 801 8270)
+   │
+   ▼
+Supabase               la base y el cerebro del agente
+   └─ Claude Opus 5    lee cajas, lee recetas, conversa</div>
+
+  <p><b>Kapso es solo el cartero.</b> El cerebro del agente vive en nuestro código,
+     en una Edge Function de Supabase, y su carácter en el archivo
+     <code>soul.md</code>. Si mañana cambiamos de proveedor de WhatsApp, se
+     reescribe un archivo y nada más.</p>
+
+  <h3>Dónde está cada cosa</h3>
+  <table>
+    <tr><th>Qué</th><th>Dónde</th></tr>
+    <tr><td>La web, el demo, el panel, los cobros</td><td>Vercel · proyecto <code>botikin</code></td></tr>
+    <tr><td>La base y el agente</td><td>Supabase · <code>lpkkhraoymqxersfxvsz</code></td></tr>
+    <tr><td>El número de WhatsApp</td><td>Kapso</td></tr>
+    <tr><td>El código fuente</td><td>github.com/felipeKango/Botikin</td></tr>
+  </table>
+</section>
+
+<section>
+  <h2><span class="n">2</span>El panel</h2>
+  <p class="lead">botikin.app/admin · pide una clave. Se refresca solo cada 30 segundos.</p>
+
+  <img class="foto" src="img/panel-arriba.png" alt="">
+  <div class="pie-img">Arriba: las alertas primero, después el embudo y los servicios.</div>
+
+  <h3>El embudo</h3>
+  <p>Son cinco pasos por los que pasa <b>la misma persona</b>, en orden. Si un
+     número es menor que el anterior, ahí se está perdiendo gente y el recuadro
+     se pinta en ámbar.</p>
+
+  <table>
+    <tr><th>Paso</th><th>Qué significa si cae</th></tr>
+    <tr><td>Pagó</td><td>—</td></tr>
+    <tr><td>Recibió su código</td><td>Un pago sin código: revisar el webhook de Flow</td></tr>
+    <tr><td>Activó por WhatsApp</td><td><b>El más caro.</b> Pagaron y no entraron</td></tr>
+    <tr><td>Contó su casa</td><td>Entraron y abandonaron el onboarding</td></tr>
+    <tr><td>Cargó un remedio</td><td>Nunca llegaron al momento que da valor</td></tr>
+  </table>
+
+  <div class="caja">
+    <b>El envío del correo se mide aparte.</b> No es una etapa donde la gente se
+    caiga, es una entrega: mezclarlo con el embudo hacía parecer que se perdía
+    gente cuando solo faltaba despachar un correo.
+  </div>
+
+  <h3>Los servicios</h3>
+  <p>Cuatro luces. Verde es que respondió en esta misma consulta, no que respondió
+     alguna vez.</p>
+  <ul>
+    <li><b>Supabase</b> — si está roja, no hay base: nada funciona</li>
+    <li><b>WhatsApp</b> — muestra el número, su estado y <b>si el webhook apunta a
+        Botikin</b>. Si no apunta, los mensajes entrantes se pierden sin dar error</li>
+    <li><b>Correo</b> — dice por qué vía sale y cuántos códigos se despacharon</li>
+    <li><b>Recaudado</b> — total cobrado y cuántos pagos fallaron</li>
+  </ul>
+
+  <img class="foto" src="img/panel-abajo.png" alt="">
+  <div class="pie-img">Abajo: uso, últimos pagos, códigos sin canjear y las casas.</div>
+
+  <p><b>"Códigos sin canjear"</b> es la tabla que más hay que mirar. Cada fila es
+     alguien que pagó y todavía no entró. La columna <i>correo enviado</i> dice
+     si el código salió o hay que entregarlo a mano.</p>
+</section>
+
+<section>
+  <h2><span class="n">3</span>Qué hacer con cada alerta</h2>
+
+  <h3><span class="luz rojo"></span>Pagó y no ha activado hace más de un día</h3>
+  <p><b>La más cara y la más silenciosa:</b> nadie reclama, simplemente no vuelve.
+     El panel te da el correo y el código. Escríbele a esa persona con su código
+     y el link de WhatsApp. Si son varios el mismo día, revisa que el correo esté
+     saliendo.</p>
+
+  <h3><span class="luz rojo"></span>El webhook de Kapso no apunta a Botikin</h3>
+  <p>Los WhatsApp entrantes se están perdiendo <b>sin ningún error visible</b>: la
+     gente escribe y nadie responde. Entra a Kapso → el número → Webhooks y
+     confirma que el activo apunte a la función de Supabase.</p>
+
+  <h3><span class="luz rojo"></span>Tratamientos terminados marcados como activos</h3>
+  <p>Riesgo real: recordarle a alguien una toma de algo que ya terminó. Se arregla
+     corriendo <code>cerrar_tratamientos_vencidos()</code> en el editor SQL de Supabase.</p>
+
+  <h3><span class="luz ambar"></span>El número se muestra con otro nombre</h3>
+  <p>Quien recibe el mensaje ve ese nombre junto a un <code>+1</code> desconocido.
+     Se cambia en Kapso y pasa por aprobación de Meta.</p>
+
+  <h3><span class="luz gris"></span>El correo sale por SMTP del buzón</h3>
+  <p>No es un problema hoy, es una deuda: techo de unos cientos diarios y sin
+     registro de rebotes — si un correo no llega, nadie se entera. Migrar a Resend
+     son tres registros DNS.</p>
+</section>
+
+<section>
+  <h2><span class="n">4</span>Tareas de todos los días</h2>
+
+  <h3>Emitir un código a mano</h3>
+  <p>Para una invitación sin cobro (prensa, prueba, un amigo). En Supabase → SQL Editor:</p>
+  <pre>select * from issue_access_code('persona@correo.cl', 'Nombre', 'manual');</pre>
+  <p>Es idempotente por correo: si esa persona ya tiene un código vivo, te devuelve
+     el mismo en vez de crear otro.</p>
+
+  <h3>Anular un código</h3>
+  <pre>update access_codes set status = 'revoked' where code = 'ABCD-EFGH';</pre>
+
+  <h3>Ver la conversación de una casa</h3>
+  <pre>select direccion, texto, created_at
+from mensajes
+where hogar_id = (select id from hogares where telefono = '+569XXXXXXXX')
+order by created_at;</pre>
+
+  <h3>Mover una casa a otro teléfono</h3>
+  <p>Cuando alguien cambia de número. <b>Nunca borres y recrees el hogar</b>: se
+     llevaría por delante a la familia, el inventario y los tratamientos.</p>
+  <pre>update hogares set telefono = '+569NUEVO' where telefono = '+569VIEJO';</pre>
+
+  <h3>Registrar un pago que llegó por otra vía</h3>
+  <pre>select * from registrar_pago(
+  'orden-flow', 3990, 'exitoso', 'persona@correo.cl',
+  'Onepay', '1234', now(), '{}'::jsonb);</pre>
+  <p>Devuelve el código de acceso. Es idempotente por número de orden: si Flow
+     reintenta la notificación, no genera dos códigos.</p>
+
+  <h3>Probar que el correo sale</h3>
+  <pre>curl -X POST https://botikin.app/api/probar-correo \
+  -H "x-panel-clave: LA_CLAVE" \
+  -H "content-type: application/json" \
+  -d '{"para":"tu@correo.cl"}'</pre>
+</section>
+
+<section>
+  <h2><span class="n">5</span>Las llaves</h2>
+  <p class="lead">Ninguna vive en el código. Están en Vercel y en Supabase, y una
+     copia local en <code>MVP/.env</code>, que git ignora.</p>
+
+  <table>
+    <tr><th>Llave</th><th>Para qué</th><th>Dónde</th></tr>
+    <tr><td>ANTHROPIC_API_KEY</td><td>El cerebro del agente</td><td>Supabase</td></tr>
+    <tr><td>SUPABASE_SERVICE_KEY</td><td>Acceso total a la base</td><td>Vercel</td></tr>
+    <tr><td>KAPSO_API_KEY</td><td>Enviar y recibir WhatsApp</td><td>ambos</td></tr>
+    <tr><td>KAPSO_WEBHOOK_SECRET</td><td>Verificar que el mensaje viene de Kapso</td><td>Supabase</td></tr>
+    <tr><td>FLOW_API_KEY / SECRET</td><td>Cobrar</td><td>Vercel</td></tr>
+    <tr><td>SMTP_PASSWORD</td><td>Mandar el correo</td><td>Vercel</td></tr>
+    <tr><td>PANEL_CLAVE</td><td>Entrar al panel</td><td>Vercel</td></tr>
+  </table>
+
+  <div class="caja roja">
+    <b>La contraseña SMTP es la del buzón de soporte.</b> No solo permite enviar:
+    permite <b>leer</b> ese correo. Quien tenga acceso al proyecto en Vercel tiene
+    acceso al buzón. Con Resend la llave solo sirve para enviar.
+  </div>
+</section>
+
+<section>
+  <h2><span class="n">6</span>Cuando algo se cae</h2>
+
+  <h3>Nadie recibe respuesta en WhatsApp</h3>
+  <ol>
+    <li>Panel → servicio WhatsApp: ¿el webhook apunta a Botikin?</li>
+    <li>Supabase → Edge Functions → <code>whatsapp</code> → Logs</li>
+    <li>Si dice <i>firma inválida</i>: cambió el secreto del webhook en Kapso</li>
+    <li>Si dice <i>claude</i>: se acabó el crédito de Anthropic o hay un error de modelo</li>
+  </ol>
+
+  <h3>El agente responde varias veces a una ráfaga de mensajes</h3>
+  <p>Es el búfer de Kapso apagado. Debe estar en <b>8 segundos</b> con
+     <code>buffer_enabled</code> activo, para que cuatro fotos seguidas sean un
+     solo turno y una sola respuesta.</p>
+
+  <h3>Alguien pagó y no le llegó el código</h3>
+  <ol>
+    <li>Panel → Últimos pagos: ¿aparece la orden?</li>
+    <li>Si aparece con código, mándaselo tú por correo o WhatsApp</li>
+    <li>Si no aparece, el webhook de Flow no llegó: regístralo a mano con
+        <code>registrar_pago()</code></li>
+  </ol>
+
+  <div class="caja ambar">
+    <b>La regla de oro:</b> el código siempre se muestra en pantalla al terminar
+    el pago, así que un problema de correo nunca deja a nadie afuera. Por eso el
+    correo es respaldo y no camino único.
+  </div>
+</section>
+
+<section>
+  <h2><span class="n">7</span>Lo que todavía falta</h2>
+  <p class="lead">Deudas conocidas, en orden de urgencia.</p>
+
+  <table>
+    <tr><th>Qué</th><th>Por qué importa</th></tr>
+    <tr><td><b>El cobro no se renueva solo</b></td>
+        <td>Flow no tiene habilitado el cargo automático (error 7001), así que hoy
+            cada mes hay que recobrar. Pedirle a Flow el contrato de cargo automático.</td></tr>
+    <tr><td><b>Sin plantillas aprobadas por Meta</b></td>
+        <td>El agente <b>no puede hablar primero</b>: fuera de la ventana de 24 horas
+            solo se permiten plantillas. Sin ellas no hay recordatorios de toma ni
+            avisos de vencimiento — que es la mitad del producto.</td></tr>
+    <tr><td><b>El proceso diario de vencimientos</b></td>
+        <td>Nadie revisa los vencimientos cada mañana todavía. Depende de lo anterior.</td></tr>
+    <tr><td><b>Sin catálogo del ISP</b></td>
+        <td>El agente detecta duplicados por coincidencia exacta de principio activo.
+            Con el registro del ISP reconocería equivalencias entre marcas.</td></tr>
+    <tr><td><b>Las recetas no se guardan</b></td>
+        <td>Se leen y se crean los tratamientos, pero el documento original y el
+            nombre del médico no quedan archivados.</td></tr>
+    <tr><td><b>Correo por SMTP</b></td>
+        <td>Techo diario y sin registro de rebotes.</td></tr>
+  </table>
+</section>
+
+</body>
+</html>

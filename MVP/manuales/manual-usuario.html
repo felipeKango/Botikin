@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="es-CL">
+<head>
+<meta charset="UTF-8">
+<title>Botikin · Manual para tu casa</title>
+<style>
+  @page { size: A4; margin: 18mm 16mm 16mm; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:"Helvetica Neue",Helvetica,Arial,sans-serif; color:#2B1114;
+         line-height:1.6; font-size:10.5pt; }
+  .portada { height:238mm; display:flex; flex-direction:column; justify-content:center;
+             page-break-after:always; }
+  .portada img.logo { width:78px; border-radius:20px; margin-bottom:26px; }
+  .portada h1 { font-size:34pt; line-height:1.05; letter-spacing:-.02em; font-weight:800;
+                max-width:15ch; margin-bottom:16px; }
+  .portada p { font-size:13pt; color:#6B5A54; max-width:44ch; }
+  .portada .pie { margin-top:auto; font-size:9pt; color:#8A7A72; }
+  h2 { font-size:17pt; letter-spacing:-.015em; font-weight:800; margin:0 0 4px;
+       padding-top:6mm; }
+  h2 .n { color:#C1121F; margin-right:8px; }
+  h3 { font-size:11.5pt; font-weight:700; margin:16px 0 4px; }
+  p { margin-bottom:9px; }
+  .lead { color:#6B5A54; margin-bottom:14px; }
+  section { margin-bottom:9mm; }
+  h2 { page-break-after:avoid; }
+  .caja, .chat, .dos, table, pre, .flujo { page-break-inside:avoid; }
+  .caja { background:#F7F1E6; border-radius:11px; padding:14px 17px; margin:12px 0; }
+  .caja.roja { background:#FCEDEE; border-left:4px solid #C1121F; border-radius:0 11px 11px 0; }
+  .caja.verde { background:#EEF7F1; border-left:4px solid #3FA96B; border-radius:0 11px 11px 0; }
+  .chat { background:#E5DCD0; border-radius:12px; padding:12px; margin:12px 0; }
+  .msg { background:#fff; border-radius:11px; padding:8px 12px; margin-bottom:6px;
+         max-width:86%; font-size:9.5pt; box-shadow:0 1px 1px rgba(0,0,0,.08); }
+  .msg.yo { background:#DCF8C6; margin-left:auto; }
+  .msg b { font-weight:700; }
+  ol, ul { margin:8px 0 8px 20px; }
+  li { margin-bottom:6px; }
+  .num { color:#C1121F; font-weight:800; }
+  img.foto { max-width:100%; border-radius:10px; border:1px solid #E4D9C8; margin:10px 0; }
+  .dos { display:flex; gap:14px; align-items:flex-start; }
+  .dos > div { flex:1; }
+  .dos img { width:100%; border-radius:10px; border:1px solid #E4D9C8; }
+  .pie-img { font-size:8.5pt; color:#8A7A72; margin-top:4px; }
+  table { width:100%; border-collapse:collapse; font-size:9.5pt; margin:10px 0; }
+  th { text-align:left; font-size:8.5pt; text-transform:uppercase; letter-spacing:.08em;
+       color:#8A7A72; padding:0 8px 6px; }
+  td { padding:7px 8px; border-top:1px solid #E4D9C8; vertical-align:top; }
+  code { background:#F0E6D6; padding:1px 5px; border-radius:4px; font-size:9.5pt; }
+  .grande { font-size:13pt; font-weight:800; letter-spacing:.06em; }
+</style>
+</head>
+<body>
+
+<div class="portada">
+  <img class="logo" src="img/avatar.png" alt="">
+  <h1>El botiquín de tu casa, por WhatsApp</h1>
+  <p>Todo lo que necesitas saber para usar Botikin. No hay nada que instalar y
+     no necesitas saber de tecnología.</p>
+  <div class="pie">Manual para la familia · Botikin · Santiago de Chile</div>
+</div>
+
+<section>
+  <h2><span class="n">1</span>Qué es Botikin</h2>
+  <p class="lead">Es un contacto de WhatsApp que lleva la cuenta de los remedios
+     de tu casa. No es una aplicación: no se descarga, no tiene clave, no tiene menús.</p>
+
+  <p>Le mandas una foto de una caja y él la registra. Te avisa un mes antes de que
+     algo se venza. Te dice si ya tienes un remedio antes de que lo compres de nuevo.
+     Y si le mandas la receta del médico, te recuerda cada toma.</p>
+
+  <div class="caja">
+    <b>Su número es +1 201 801 8270.</b> Es un número de Estados Unidos porque
+    así funciona el servicio de WhatsApp que usamos. Guárdalo como <b>Botikin</b>
+    en tus contactos y no te va a costar encontrarlo.
+  </div>
+</section>
+
+<section>
+  <h2><span class="n">2</span>Cómo entrar</h2>
+  <p class="lead">Botikin funciona por invitación. Después de pagar te llega un
+     código al correo.</p>
+
+  <div class="dos">
+    <div>
+      <img src="img/activar.png" alt="">
+      <div class="pie-img">Pones tu nombre y tu correo en botikin.app</div>
+    </div>
+    <div>
+      <img src="img/flow-pago-ok.png" alt="">
+      <div class="pie-img">Pagas $3.990 con tu tarjeta</div>
+    </div>
+  </div>
+
+  <p>Al terminar te aparece tu código en pantalla <b>y te llega por correo</b>.
+     Es de ocho caracteres, algo así:</p>
+
+  <p class="grande">A D 4 A – D N U Q</p>
+
+  <ol>
+    <li>Abre WhatsApp y escríbele al <b>+1 201 801 8270</b></li>
+    <li>Mándale el código tal cual, sin explicaciones</li>
+    <li>Listo: te saluda y te pregunta quiénes viven contigo</li>
+  </ol>
+
+  <div class="caja verde">
+    <b>Anota el código antes de cerrar la página.</b> Si lo pierdes, el correo
+    también lo tiene. Y si tampoco lo encuentras, escríbenos a
+    soporte@botikin.app.
+  </div>
+</section>
+
+<section>
+  <h2><span class="n">3</span>Cuéntale quiénes viven contigo</h2>
+  <p class="lead">Es lo primero que te va a preguntar, y vale la pena hacerlo bien:
+     de ahí sale todo lo demás.</p>
+
+  <div class="chat">
+    <div class="msg">Para partir, ¿quiénes viven contigo?</div>
+    <div class="msg yo">mi señora Catalina y mis dos hijos</div>
+    <div class="msg">Anotado. Voy de a uno para no equivocarme.<br><br>¿Cuándo nació el primero?</div>
+    <div class="msg yo">Bruno tiene 4 años</div>
+    <div class="msg">Necesito la fecha exacta, no la edad: en unos meses el número
+      cambia y yo me quedaría con el dato viejo.<br><br>¿Qué día nació?</div>
+    <div class="msg yo">23 de noviembre de 2021</div>
+    <div class="msg">Bruno, 4 años y 8 meses. ¿Correcto?</div>
+  </div>
+
+  <p><b>Va a insistir con la fecha de nacimiento y no es capricho.</b> Si guardara
+     "4 años", en marzo esa información estaría equivocada. Con la fecha, la edad
+     se calcula sola y nunca envejece mal. Además le sirve para no confundirse:
+     a un niño de 4 años los remedios le vienen en jarabe, no en comprimidos.</p>
+</section>
+
+<section>
+  <h2><span class="n">4</span>Registrar un remedio</h2>
+  <p class="lead">Una foto de la caja. Eso es todo.</p>
+
+  <div class="dos">
+    <div>
+      <img src="img/caja-real.webp" alt="">
+      <div class="pie-img">Le mandas esta foto…</div>
+    </div>
+    <div>
+      <div class="chat" style="margin-top:0">
+        <div class="msg">Leí <b>Paracetamol 500 mg</b>, 16 comprimidos, Andrómaco.
+          <br><br>La fecha de vencimiento no sale en esa cara. ¿Me la dictas?
+          Está en una de las solapas del costado, a veces en relieve.</div>
+        <div class="msg yo">01/2027</div>
+        <div class="msg">Guardado. Vence 01/2027: te aviso un mes antes.</div>
+      </div>
+    </div>
+  </div>
+
+  <h3>Si no lee algo, te lo pregunta</h3>
+  <p>El vencimiento casi nunca está en la cara principal del envase. En vez de
+     pedirte otra foto, te pregunta y tú se lo dictas. Es más rápido para los dos.</p>
+
+  <h3>Nunca inventa un dato</h3>
+  <p>Si algo no se ve en la foto, lo deja en blanco y pregunta. Prefiere no saber
+     antes que suponer: un dato mal guardado hoy es una alerta equivocada en tres meses.</p>
+
+  <div class="caja">
+    <b>También puedes escribírselo.</b> "Compré losartán de 50, 30 comprimidos"
+    funciona igual de bien que una foto.
+  </div>
+</section>
+
+<section>
+  <h2><span class="n">5</span>Lo que hace por ti sin que le pidas</h2>
+
+  <table>
+    <tr><th>Cuándo</th><th>Qué hace</th></tr>
+    <tr><td><b>Compras algo que ya tienes</b></td>
+        <td>Te avisa antes de que gastes. "No compres: ya tienes Panadol 500 mg.
+            Es el mismo paracetamol." Lo reconoce por el compuesto, no por la marca,
+            así que Kitadol, Tapsin y Panadol son lo mismo para él.</td></tr>
+    <tr><td><b>Algo va a vencer</b></td>
+        <td>Te escribe 30 días antes, con qué hacer: usarlo, priorizarlo, o llevarlo
+            a un punto limpio de farmacia.</td></tr>
+    <tr><td><b>Hay un tratamiento</b></td>
+        <td>Te recuerda las tomas del día. Le respondes "listo" y él descuenta del
+            stock y te dice hasta cuándo alcanza.</td></tr>
+  </table>
+
+  <h3>La receta del médico</h3>
+  <p>Mándale la foto o el PDF de la receta. Lee todas las páginas y separa los
+     tratamientos según lo que escribió el médico: los que son <b>de permanencia</b>
+     (no terminan), los que duran <b>unos días</b>, y los que son <b>SOS</b> —solo
+     si hay fiebre o dolor—, que no llevan horario.</p>
+</section>
+
+<section>
+  <h2><span class="n">6</span>Ver todo tu botiquín</h2>
+  <p class="lead">Escribe la palabra <b>Botikin</b>, sola, y te muestra la lista completa.</p>
+
+  <div class="chat">
+    <div class="msg yo">Botikin</div>
+    <div class="msg">Tienes los siguientes medicamentos:<br><br>
+      <b>Bruno</b><br>
+      • ⚠️ Paracetamol 100 mg/mL — 60 mL · vence en 21 días<br><br>
+      <b>Rosa</b><br>
+      • Losartán 50 mg — 30 comprimidos · vence 03/2027<br><br>
+      <b>De la casa</b><br>
+      • Ibuprofeno 600 mg — 20 comprimidos · vence 01/2027<br><br>
+      ⚠️ 1 necesita atención.</div>
+  </div>
+
+  <p>Está agrupado por persona y lo urgente aparece primero. El ⚠️ marca lo que
+     ya venció o vence dentro de un mes.</p>
+
+  <p>También puedes preguntarle con tus palabras: <i>"¿me queda ibuprofeno?"</i>,
+     <i>"¿qué tiene Bruno?"</i>, <i>"¿cuándo vence el jarabe?"</i>.</p>
+</section>
+
+<section>
+  <h2><span class="n">7</span>Lo que Botikin no hace</h2>
+  <p class="lead">Esto es lo más importante del manual.</p>
+
+  <div class="caja roja">
+    <p style="margin-bottom:6px"><b>Botikin no es un médico y no da consejos de salud.</b></p>
+    <p style="margin-bottom:0">Solo habla de lo que está guardado en el botiquín de
+    tu casa. No diagnostica, no recomienda remedios, no cambia dosis y no opina
+    sobre mezclar medicamentos. Cuando le preguntas algo así, te lo dice y te manda
+    al médico. Eso es a propósito.</p>
+  </div>
+
+  <div class="chat">
+    <div class="msg yo">me duele la guata, ¿qué tomo?</div>
+    <div class="msg">No puedo recomendarte un remedio: no soy médico y no sé qué te
+      está pasando. Si el dolor es fuerte o no cede, anda a un centro de salud.</div>
+    <div class="msg yo">¿le puedo dar la mitad a Bruno?</div>
+    <div class="msg">Esa decisión es del médico, no mía. Yo solo repito lo que dice
+      la receta: 3,5 mL cada 24 horas.</div>
+  </div>
+
+  <div class="caja roja">
+    <p style="margin-bottom:6px"><b>Si es una emergencia, no escribas por WhatsApp.</b></p>
+    <p style="margin-bottom:0">Dolor en el pecho, dificultad para respirar, una
+    reacción alérgica, una intoxicación: llama al <b>SAMU 131</b> o anda al servicio
+    de urgencia. Para intoxicaciones, el <b>CITUC</b> es <b>2 2635 3800</b>.</p>
+  </div>
+</section>
+
+<section>
+  <h2><span class="n">8</span>Preguntas que nos hacen</h2>
+
+  <h3>¿Y si cambio de teléfono?</h3>
+  <p>Escríbenos a soporte@botikin.app desde el correo con que te registraste y
+     movemos tu casa al número nuevo. No pierdes nada.</p>
+
+  <h3>¿Puede escribirle otra persona de la casa?</h3>
+  <p>Por ahora responde solo al número que activó la cuenta. Si otro número escribe,
+     no entrega información de tu casa — es a propósito, son datos de salud.</p>
+
+  <h3>¿Qué pasa con mis datos?</h3>
+  <p>Se usan solo para llevar tu botiquín. No se venden, no se comparten y no
+     recomendamos marcas ni farmacias. Si quieres que borremos algo, se lo pides
+     y se borra.</p>
+
+  <h3>¿Cómo cancelo?</h3>
+  <p>Escríbenos a soporte@botikin.app. Sin llamadas ni formularios.</p>
+
+  <div class="caja" style="margin-top:16px">
+    <b>¿Algo no funcionó como esperabas?</b> Escríbenos a soporte@botikin.app.
+    Somos poca gente y contestamos.
+  </div>
+</section>
+
+</body>
+</html>
