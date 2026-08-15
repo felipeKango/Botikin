@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Prueba a Doctor Botikin — demo</title>
-<meta name="description" content="Conversa con Doctor Botikin, el agente de WhatsApp que administra el botiquín de tu casa. Demo interactivo, sin instalar nada.">
+<title>Botikin en acción</title>
+<meta name="description" content="Una semana con Doctor Botikin: conocer la casa, registrar remedios, recordar las tomas y leer una receta. Todo por WhatsApp.">
 <link rel="icon" href="img/avatar.png">
 <style>
   :root {
@@ -23,482 +23,368 @@
     font-family: "Poppins","Montserrat",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
     background: var(--vino); color: var(--tinta);
     display: flex; align-items: center; justify-content: center;
-    padding: clamp(0px, 3vw, 26px);
+    padding: clamp(0px, 3vw, 24px); gap: clamp(0px, 4vw, 48px);
   }
+
+  /* ── Relato lateral (solo en pantalla ancha) ── */
+  .relato { display: none; max-width: 300px; color: var(--crema); }
+  @media (min-width: 1000px) { .relato { display: block; } }
+  .relato h1 { font-size: 2rem; line-height: 1.1; letter-spacing: -.02em; font-weight: 800; }
+  .relato p { color: rgba(251,243,231,.72); font-size: .95rem; margin-top: 14px; line-height: 1.6; }
+  .capitulos { list-style: none; margin-top: 30px; display: grid; gap: 3px; }
+  .capitulos li {
+    font-size: .87rem; padding: 11px 14px; border-radius: 10px;
+    color: rgba(251,243,231,.42); transition: .35s; display: flex; gap: 11px;
+    align-items: baseline; line-height: 1.35;
+  }
+  .capitulos li b { font-size: .7rem; opacity: .5; font-weight: 700; min-width: 14px; }
+  .capitulos li.on { background: rgba(251,243,231,.11); color: var(--crema); }
+  .capitulos li.hecho { color: rgba(251,243,231,.6); }
+  .relato .pie { margin-top: 28px; font-size: .78rem; color: rgba(251,243,231,.4); line-height: 1.6; }
+
+  /* ── Teléfono ── */
   .telefono {
-    width: 100%; max-width: 430px; height: 100%; max-height: 880px;
+    width: 100%; max-width: 420px; height: 100%; max-height: 860px;
     background: var(--chat-fondo); border-radius: clamp(0px, 4vw, 26px);
     display: flex; flex-direction: column; overflow: hidden;
-    box-shadow: 0 30px 70px rgba(0,0,0,.4);
+    box-shadow: 0 30px 70px rgba(0,0,0,.42); position: relative;
   }
-
-  /* Cabecera */
-  .cab { background: var(--verde-wa); color:#fff; padding: 12px 14px;
-         display:flex; align-items:center; gap:11px; flex: none; }
-  .cab img { width:42px; height:42px; border-radius:50%; object-fit:cover; background:#fff; flex:none; }
-  .cab .id { flex:1; min-width:0; }
-  .cab b { font-size:1rem; display:block; line-height:1.2; }
-  .cab .estado { font-size:.74rem; opacity:.85; display:flex; align-items:center; gap:5px; }
+  .cab { background: var(--verde-wa); color:#fff; padding: 11px 14px;
+         display:flex; align-items:center; gap:11px; flex: none; z-index: 3; }
+  .cab img { width:40px; height:40px; border-radius:50%; object-fit:cover; background:#fff; flex:none; }
+  .cab b { font-size:.98rem; display:block; line-height:1.2; }
+  .cab .estado { font-size:.72rem; opacity:.85; display:flex; align-items:center; gap:5px; }
   .punto { width:7px; height:7px; border-radius:50%; background:#5DE28F; display:inline-block; }
-  .cab button { background:rgba(255,255,255,.15); color:#fff; border:0; border-radius:8px;
-                padding:7px 10px; font-size:.72rem; font-weight:700; cursor:pointer;
-                font-family:inherit; letter-spacing:.03em; }
-  .cab button:hover { background:rgba(255,255,255,.28); }
 
-  .cinta { background:#FFF6D6; color:#6B5312; font-size:.7rem; text-align:center;
-           padding:6px 12px; flex:none; font-weight:600; letter-spacing:.02em; }
+  .cinta { background:#FFF6D6; color:#6B5312; font-size:.68rem; text-align:center;
+           padding:5px 12px; flex:none; font-weight:600; z-index: 3; }
 
-  /* Hilo */
-  .hilo { flex:1; overflow-y:auto; padding:16px 12px 8px;
-          display:flex; flex-direction:column; gap:8px; scroll-behavior:smooth; }
-  .msg { max-width:82%; padding:9px 13px; border-radius:14px; font-size:.9rem;
-         line-height:1.5; background:#fff; box-shadow:0 1px 1.5px rgba(0,0,0,.12);
-         white-space:pre-wrap; word-wrap:break-word;
-         animation: entra .25s ease-out; position:relative; }
+  /* barra de avance */
+  .barra-avance { height: 3px; background: rgba(0,0,0,.08); flex: none; z-index: 3; }
+  .barra-avance i { display:block; height:100%; width:0; background: var(--rojo); transition: width .4s linear; }
+
+  .hilo { flex:1; overflow-y:auto; padding:14px 12px 10px;
+          display:flex; flex-direction:column; gap:7px; scroll-behavior:smooth; }
+  .hilo::-webkit-scrollbar { width: 0; }
+
+  .msg { max-width:84%; padding:8px 12px; border-radius:14px; font-size:.875rem;
+         line-height:1.5; background:#fff; box-shadow:0 1px 1.5px rgba(0,0,0,.13);
+         white-space:pre-wrap; word-wrap:break-word; animation: entra .3s ease-out; }
   .msg.yo { background:var(--burbuja-yo); align-self:flex-end; }
-  .msg .hora { font-size:.62rem; color:#8A8A8A; float:right; margin:6px 0 -4px 10px; }
-  @keyframes entra { from { opacity:0; transform: translateY(8px); } to { opacity:1; transform:none; } }
-  .msg.foto { padding:7px; }
-  .msg.foto .marco { background:#F0EDE6; border-radius:9px; padding:22px 16px; text-align:center;
-                     font-size:.76rem; font-weight:700; color:var(--gris); }
-  .msg.foto .marco span { font-size:1.7rem; display:block; margin-bottom:5px; }
-  .dia { align-self:center; background:rgba(255,255,255,.75); color:var(--gris);
-         font-size:.68rem; padding:4px 12px; border-radius:8px; font-weight:600; margin:2px 0 6px; }
+  .msg .hora { font-size:.6rem; color:#8A8A8A; float:right; margin:6px 0 -3px 9px; }
+  @keyframes entra { from { opacity:0; transform: translateY(10px) scale(.98); } to { opacity:1; transform:none; } }
+  .msg strong { font-weight: 700; }
+  .msg em { font-style: normal; color: #7A7068; font-size: .82em; }
 
-  .escribiendo { align-self:flex-start; background:#fff; border-radius:14px; padding:12px 15px;
+  .msg.adjunto { padding:6px; }
+  .msg.adjunto .marco { background:#F0EDE6; border-radius:9px; padding:20px 14px;
+                        text-align:center; font-size:.74rem; font-weight:700; color:var(--gris); }
+  .msg.adjunto .marco span { font-size:1.6rem; display:block; margin-bottom:4px; }
+
+  .dia { align-self:center; background:rgba(255,255,255,.8); color:var(--gris);
+         font-size:.66rem; padding:4px 13px; border-radius:8px; font-weight:700;
+         margin:8px 0 4px; letter-spacing:.03em; animation: entra .4s; }
+
+  .escribiendo { align-self:flex-start; background:#fff; border-radius:14px; padding:11px 14px;
                  display:flex; gap:4px; box-shadow:0 1px 1.5px rgba(0,0,0,.12); }
-  .escribiendo i { width:7px; height:7px; border-radius:50%; background:#B9B4AC;
-                   animation: rebota 1.3s infinite; }
+  .escribiendo i { width:7px; height:7px; border-radius:50%; background:#B9B4AC; animation: rebota 1.3s infinite; }
   .escribiendo i:nth-child(2){ animation-delay:.18s } .escribiendo i:nth-child(3){ animation-delay:.36s }
   @keyframes rebota { 0%,60%,100%{ transform:none; opacity:.5 } 30%{ transform:translateY(-5px); opacity:1 } }
 
-  /* Sugerencias */
-  .chips { flex:none; padding:8px 10px 4px; display:flex; gap:7px; overflow-x:auto;
-           scrollbar-width:none; }
-  .chips::-webkit-scrollbar { display:none; }
-  .chip { flex:none; background:#fff; border:1.5px solid rgba(14,92,75,.3); color:var(--verde-wa);
-          border-radius:999px; padding:8px 14px; font-size:.79rem; font-weight:600;
-          cursor:pointer; font-family:inherit; white-space:nowrap; transition:.13s; }
-  .chip:hover { background:var(--verde-wa); color:#fff; border-color:var(--verde-wa); }
-  .chip:active { transform:scale(.96); }
+  /* ── Controles ── */
+  .controles { flex:none; display:flex; align-items:center; justify-content:center; gap:10px;
+               padding:9px 12px calc(11px + env(safe-area-inset-bottom)); }
+  .ctrl { background:#fff; border:0; border-radius:999px; padding:8px 16px; font-size:.78rem;
+          font-weight:700; color:var(--verde-wa); cursor:pointer; font-family:inherit;
+          box-shadow:0 1px 3px rgba(0,0,0,.12); transition:.14s; display:flex; align-items:center; gap:6px; }
+  .ctrl:hover { background:var(--verde-wa); color:#fff; }
+  .ctrl:active { transform:scale(.95); }
+  .ctrl.fantasma { background:transparent; box-shadow:none; color:var(--gris); }
+  .ctrl.fantasma:hover { color:var(--vino); background:transparent; }
 
-  /* Barra de entrada */
-  .barra { flex:none; padding:8px 10px calc(10px + env(safe-area-inset-bottom));
-           display:flex; gap:8px; align-items:center; background:transparent; }
-  .barra input { flex:1; border:0; border-radius:999px; padding:12px 16px; font-size:.92rem;
-                 font-family:inherit; background:#fff; outline:none; min-width:0;
-                 box-shadow:0 1px 2px rgba(0,0,0,.1); }
-  .barra button { flex:none; width:44px; height:44px; border-radius:50%; border:0;
-                  background:var(--verde-wa); color:#fff; font-size:1.1rem; cursor:pointer; }
-  .barra button:active { transform:scale(.93); }
-
-  .pie { flex:none; text-align:center; font-size:.66rem; color:var(--gris);
-         padding:0 12px 8px; }
-  .pie a { color:var(--rojo); font-weight:700; }
+  /* ── Cierre ── */
+  .cierre {
+    position:absolute; inset:0; background:rgba(74,14,18,.94); color:var(--crema);
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    text-align:center; padding:32px; gap:14px; z-index:5;
+    opacity:0; pointer-events:none; transition:opacity .5s;
+  }
+  .cierre.ver { opacity:1; pointer-events:auto; }
+  .cierre h2 { font-size:1.5rem; line-height:1.15; letter-spacing:-.02em; }
+  .cierre p { font-size:.9rem; opacity:.75; max-width:26rem; line-height:1.6; }
+  .cierre .acciones { display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin-top:8px; }
+  .cierre a, .cierre button {
+    background:var(--rojo); color:#fff; border:2px solid var(--rojo); border-radius:999px;
+    padding:11px 22px; font-weight:700; font-size:.87rem; text-decoration:none;
+    cursor:pointer; font-family:inherit;
+  }
+  .cierre .otro { background:transparent; border-color:rgba(251,243,231,.45); color:var(--crema); }
 </style>
 </head>
 <body>
 
+<div class="relato">
+  <h1>Una semana con Botikin</h1>
+  <p>Esto es lo que pasa en el chat de una casa cualquiera, desde el primer
+     mensaje hasta la receta del pediatra.</p>
+  <ul class="capitulos" id="capitulos">
+    <li><b>1</b><span>Conocer la casa</span></li>
+    <li><b>2</b><span>La primera caja</span></li>
+    <li><b>3</b><span>El duplicado que no se compra</span></li>
+    <li><b>4</b><span>La toma de la mañana</span></li>
+    <li><b>5</b><span>La receta del pediatra</span></li>
+    <li><b>6</b><span>El botiquín completo</span></li>
+  </ul>
+  <p class="pie">Conversación recreada. Las lecturas de caja y receta son
+     salidas reales del agente sobre documentos reales.</p>
+</div>
+
 <div class="telefono">
   <div class="cab">
     <img src="img/avatar.png" alt="Botikin">
-    <div class="id">
+    <div>
       <b>Botikin</b>
       <span class="estado"><span class="punto"></span>en línea</span>
     </div>
-    <button onclick="reiniciar()">REINICIAR</button>
   </div>
-
-  <div class="cinta">DEMO · conversación simulada, no se envía ningún WhatsApp</div>
+  <div class="cinta">DEMO · conversación recreada, no se envía ningún WhatsApp</div>
+  <div class="barra-avance"><i id="avance"></i></div>
 
   <div class="hilo" id="hilo"></div>
 
-  <div class="chips" id="chips"></div>
-
-  <div class="barra">
-    <input id="entrada" placeholder="Escribe un mensaje" autocomplete="off"
-           onkeydown="if(event.key==='Enter')enviarEscrito()">
-    <button onclick="enviarEscrito()" aria-label="Enviar">➤</button>
+  <div class="controles">
+    <button class="ctrl" id="pausa">⏸ Pausar</button>
+    <button class="ctrl fantasma" id="reiniciar">↻ Desde el inicio</button>
   </div>
 
-  <p class="pie">
-    Botikin no da asesoría médica · <a href="/">Volver a botikin.app</a>
-  </p>
+  <div class="cierre" id="cierre">
+    <h2>Eso es Botikin.</h2>
+    <p>Sin app, sin formularios, sin menús. El botiquín de tu casa vive en el
+       chat que ya tienes abierto.</p>
+    <div class="acciones">
+      <a href="/#plan">Quiero mi invitación</a>
+      <button class="otro" id="devuelta">↻ Ver de nuevo</button>
+    </div>
+  </div>
 </div>
 
 <script>
 /* ─────────────────────────────────────────────────────────────
-   Doctor Botikin — demo en modo MOCKUP
-   Toda la conversación es local. No hay red, no hay modelo,
-   no sale ningún mensaje. Las fechas SÍ son reales: se calculan
-   contra el día de hoy, igual que lo hace el agente de verdad.
+   Botikin — demo en modo MOCKUP, reproducción automática.
+
+   Se ve solo, como un video. Nada de esto sale a la red: el guion
+   está escrito acá. Las lecturas de caja y receta sí son salidas
+   reales del agente sobre la caja y la receta de verdad.
    ───────────────────────────────────────────────────────────── */
 
 const MESES = ["enero","febrero","marzo","abril","mayo","junio","julio",
                "agosto","septiembre","octubre","noviembre","diciembre"];
-
 const hoy = new Date();
-const enDias = n => { const d = new Date(hoy); d.setDate(d.getDate()+n); return d; };
-const fmt    = d => `${d.getDate()} de ${MESES[d.getMonth()]}`;
-const fmtCorta = d => `${String(d.getDate()).padStart(2,"0")}/${String(d.getMonth()+1).padStart(2,"0")}`;
+const enDias = (n) => { const d = new Date(hoy); d.setDate(d.getDate()+n); return d; };
+const fmt  = (d) => `${d.getDate()} de ${MESES[d.getMonth()]}`;
+const mesAno = (d) => `${String(d.getMonth()+1).padStart(2,"0")}/${d.getFullYear()}`;
 
-/* La casa de la demo, con fechas vivas */
-const CASA = {
-  vencePronto : enDias(27),   // el jarabe de Bruno
-  alcanzaHasta: enDias(42),   // stock de losartán
-  terminaTos  : enDias(4),    // tratamiento por 5 días
+// Fechas vivas: el demo envejece bien porque se calcula contra hoy.
+const F = {
+  venceJarabe : enDias(27),
+  alcanzaHasta: enDias(42),
+  terminaTos  : enDias(4),
+  losartan    : new Date(hoy.getFullYear()+1, 2, 31),
 };
 
-const hora = () => {
-  const d = new Date();
-  return `${d.getHours()}:${String(d.getMinutes()).padStart(2,"0")}`;
-};
+/* ── El guion ────────────────────────────────────────────────
+   quien: 'bot' | 'yo' | 'dia'
+   t: texto · adj: adjunto · pausa: ms extra antes de aparecer   */
+const GUION = [
+  { cap: 0, quien:"dia", t:"HOY" },
+  { quien:"yo",  t:"Hola" },
+  { quien:"bot", t:"Hola, bienvenida 👋 Soy el Doctor Botikin y me encargo del botiquín de tu casa: registro qué remedios hay, de quién son y cuándo vencen.\n\nPara partir, ¿cómo te llamas?" },
+  { quien:"yo",  t:"Carmen" },
+  { quien:"bot", t:"Un gusto, Carmen. ¿Quiénes viven contigo?" },
+  { quien:"yo",  t:"mi mamá Rosa y mi hijo Bruno" },
+  { quien:"bot", t:"Anotado. Voy de a uno para no equivocarme.\n\n¿Cuándo nació Bruno?" },
+  { quien:"yo",  t:"tiene 4 años" },
+  { quien:"bot", t:"Necesito la fecha exacta, no la edad: en unos meses el número cambia y yo me quedaría con el dato viejo.\n\n¿Qué día nació?" },
+  { quien:"yo",  t:"23 de noviembre de 2021" },
+  { quien:"bot", t:() => {
+      const n = new Date(2021,10,23);
+      let a = hoy.getFullYear()-n.getFullYear(), m = hoy.getMonth()-n.getMonth();
+      if (hoy.getDate() < n.getDate()) m--;
+      if (m < 0) { a--; m += 12; }
+      return `Bruno, ${a} años y ${m} meses. ¿Correcto?\n\nLo pregunto porque a esa edad los remedios vienen en jarabe y no en comprimidos — me sirve para no confundirme después.`;
+    }},
+  { quien:"yo",  t:"correcto" },
+  { quien:"bot", t:"Listo: tú, Rosa y Bruno.\n\nAhora empecemos el botiquín. Mándame una foto de cualquier caja que tengas a mano." },
 
-/* ── Guion ────────────────────────────────────────────────── */
-const NODOS = {
-  inicio: {
-    bot: [
-      "Hola, soy el Doctor Botikin 👋\nYo llevo la cuenta del botiquín de tu casa: qué hay, de quién es y hasta cuándo sirve.",
-      "Para partir necesito saber quiénes viven contigo. ¿Me cuentas?"
-    ],
-    chips: [
-      { t:"Vivo con mi mamá Rosa y mi hijo Bruno", ir:"casa" },
-      { t:"¿Eres doctor de verdad?", ir:"no_soy_doctor" }
-    ]
-  },
+  { cap: 1, quien:"yo", adj:{ icono:"🖼️", nombre:"CAJA_LOSARTAN.JPG" } },
+  { quien:"bot", t:"Leí <strong>Losartán 50 mg</strong>, 30 comprimidos.\n\nLa fecha de vencimiento no sale en esa cara. ¿Me la dictas? Está en una de las solapas del costado, a veces en relieve.", pausa: 1200 },
+  { quien:"yo",  t:"03/2027" },
+  { quien:"bot", t:() => `Guardado a nombre de Rosa. Vence ${mesAno(F.losartan)}: te aviso un mes antes.` },
 
-  casa: {
-    bot: [
-      "Perfecto. Vamos de a uno.\n\n¿Cuándo nació Bruno?"
-    ],
-    chips: [
-      { t:"El 23 de noviembre de 2021", ir:"edad_bruno" },
-      { t:"Tiene 4 años", ir:"pide_fecha" }
-    ]
-  },
+  { cap: 2, quien:"dia", t:`${fmt(enDias(2)).toUpperCase()}` },
+  { quien:"yo",  t:"estoy en la farmacia, ¿compro Kitadol para tener?" },
+  { quien:"bot", t:"No compres: ya tienes <strong>Panadol 500 mg</strong> (16 comprimidos, vence 11/2026). Es el mismo paracetamol en la misma dosis.\n\nLo que sí se te está acabando es el ibuprofeno: quedan 4." },
+  { quien:"yo",  t:"jaja no tenía idea, gracias" },
 
-  pide_fecha: {
-    bot: [
-      "Necesito la fecha exacta, no la edad: en tres meses el número cambia y yo me quedo con el dato viejo.\n\n¿Qué día nació?"
-    ],
-    chips: [ { t:"El 23 de noviembre de 2021", ir:"edad_bruno" } ]
-  },
+  { cap: 3, quien:"dia", t:`${fmt(enDias(3)).toUpperCase()} · 08:00` },
+  { quien:"bot", t:"Buenos días, Carmen ☀️\n\nAhora le toca a Rosa: 1 comprimido de losartán." },
+  { quien:"yo",  t:"listo" },
+  { quien:"bot", t:() => `Anotado 👍\n\nCon eso le quedan 27 comprimidos, alcanzan hasta el ${fmt(F.alcanzaHasta)}.` },
 
-  edad_bruno: {
-    bot: [
-      () => {
-        const n = new Date(2021,10,23);
-        let a = hoy.getFullYear()-n.getFullYear();
-        let m = hoy.getMonth()-n.getMonth();
-        if (hoy.getDate() < n.getDate()) m--;
-        if (m < 0) { a--; m += 12; }
-        return `Anotado: Bruno, ${a} años y ${m} meses. ¿Correcto?\n\nLo pregunto porque a esa edad los remedios vienen en jarabe y no en comprimidos — me sirve para no confundirme después.`;
-      }
-    ],
-    chips: [ { t:"Correcto", ir:"pide_foto" } ]
-  },
+  { cap: 4, quien:"dia", t:`${fmt(enDias(5)).toUpperCase()}` },
+  { quien:"yo",  t:"llegamos del pediatra con Bruno, te mando la receta" },
+  { quien:"yo",  adj:{ icono:"📄", nombre:"RECETA_UC_CHRISTUS.PDF" } },
+  { quien:"bot", t:"Receta del 15 de mayo, Dra. Fernández, para Bruno.\n\nSon 6 tratamientos:", pausa: 2200 },
+  { quien:"bot", t:() =>
+      "<strong>De permanencia</strong> (no terminan)\n" +
+      "• Fluticasona 125 mcg — 1 inhalación cada 12 h\n" +
+      "• Fluticasona nasal 27,5 mcg — 1 aplicación cada 12 h\n" +
+      "• Levocetirizina 2,5 mg/5 mL — 3,5 mL cada 24 h\n\n" +
+      `<strong>Por 5 días</strong> (terminan el ${fmt(F.terminaTos)})\n` +
+      "• Levodropropizina 30 mg/5 mL — 3,8 mL cada 8 h\n" +
+      "• Betametasona + dexclorfeniramina — 3,5 mL cada 8 h\n\n" +
+      "<strong>Solo si tiene fiebre</strong>\n" +
+      "• Paracetamol 160 mg — 1,5 comprimidos\n" +
+      "<em>Ese no te lo voy a recordar por horario: es SOS.</em>" },
+  { quien:"bot", t:"De los seis, el único que no tienes en casa es la <strong>levodropropizina</strong>. Los otros cinco ya están en tu botiquín.\n\n¿Te recuerdo las tomas?" },
+  { quien:"yo",  t:"sí por favor" },
+  { quien:"bot", t:"Listo. Te escribo en tres bloques: mañana, tarde y noche.\n\nLo que no me confirmes queda como <em>sin confirmar</em> — no lo doy por tomado." },
 
-  pide_foto: {
-    bot: [
-      "Listo. Ya tengo tu casa: tú, Rosa y Bruno.",
-      "Ahora empecemos el botiquín. Mándame una foto de cualquier caja que tengas a mano — con eso me basta."
-    ],
-    chips: [
-      { t:"📷 Foto de la caja de Losartán", ir:"registra_losartan", foto:"CAJA_LOSARTAN.JPG" },
-      { t:"📄 Mandar la receta de Bruno", ir:"receta", foto:"RECETA_15MAY.PDF" }
-    ]
-  },
-
-  registra_losartan: {
-    bot: [
-      "Registré Losartán 50 mg × 30 comprimidos, a nombre de Rosa. Vence 03/2027: te aviso un mes antes.",
-      () => `Ojo: ya tenías 12 comprimidos vigentes del mismo losartán. Con esta caja te alcanza hasta el ${fmt(CASA.alcanzaHasta)} — no compres más.`
-    ],
-    chips: [
-      { t:"Voy a la farmacia, ¿compro Kitadol?", ir:"kitadol" },
-      { t:"📄 Mandar la receta de Bruno", ir:"receta", foto:"RECETA_15MAY.PDF" },
-      { t:"¿Qué se me vence pronto?", ir:"vencimientos" }
-    ]
-  },
-
-  kitadol: {
-    bot: [
-      "No compres: ya tienes Panadol 500 mg (16 comprimidos, vence 11/2026). Es el mismo paracetamol en la misma dosis.",
-      "Lo que sí se te está acabando es el ibuprofeno: quedan 4."
-    ],
-    chips: [
-      { t:"¿Y el jarabe de Bruno es lo mismo?", ir:"jarabe_distinto" },
-      { t:"📄 Mandar la receta de Bruno", ir:"receta", foto:"RECETA_15MAY.PDF" },
-      { t:"¿Qué se me vence pronto?", ir:"vencimientos" }
-    ]
-  },
-
-  jarabe_distinto: {
-    bot: [
-      "No. El de Bruno es paracetamol en jarabe de 100 mg/mL, y el Panadol es comprimido de 500 mg.",
-      "Mismo principio activo, pero distinta forma y distinta concentración: para mí son dos cosas separadas, y menos mal — confundirlas sería peligroso."
-    ],
-    chips: [
-      { t:"📄 Mandar la receta de Bruno", ir:"receta", foto:"RECETA_15MAY.PDF" },
-      { t:"¿Qué se me vence pronto?", ir:"vencimientos" }
-    ]
-  },
-
-  receta: {
-    bot: [
-      "Receta del 15 de mayo, Dra. Fernández, para Bruno.",
-      () => `Son 6 tratamientos: 2 de permanencia (los dos inhaladores) y 4 que terminan el ${fmt(CASA.terminaTos)}. El paracetamol es SOS, así que ese no te lo voy a recordar por horario.`,
-      "De todos, el único que no tienes en casa es la levodropropizina. Los otros cinco ya están en tu botiquín."
-    ],
-    chips: [
-      { t:"¿Para qué sirve la levocetirizina?", ir:"deriva" },
-      { t:"¿Le puedo dar la mitad?", ir:"deriva_dosis" },
-      { t:"Sí, recuérdame las tomas", ir:"tomas" }
-    ]
-  },
-
-  tomas: {
-    bot: [
-      "Listo. Te escribo en tres bloques: mañana, tarde y noche.",
-      "Mañana a las 8 te va a llegar esto:\n\n«Buenos días. Ahora le toca a Bruno: 1 inhalación de Flixotide y 3,5 mL de levocetirizina.»",
-      "Tú me respondes “listo” y yo descuento del stock. Lo que no me confirmes queda como *sin confirmar* — no lo doy por tomado."
-    ],
-    chips: [
-      { t:"listo ✅", ir:"confirma" },
-      { t:"¿Para qué sirve la levocetirizina?", ir:"deriva" }
-    ]
-  },
-
-  confirma: {
-    bot: [
-      "Anotado 👍",
-      () => `Con eso a Bruno le queda jarabe hasta el ${fmt(CASA.terminaTos)}, justo para terminar el tratamiento. No necesitas comprar más.`
-    ],
-    chips: [
-      { t:"¿Qué se me vence pronto?", ir:"vencimientos" },
-      { t:"Me duele el pecho", ir:"urgencia" }
-    ]
-  },
-
-  vencimientos: {
-    bot: [
-      () => `Una cosa: el jarabe de Bruno vence el ${fmt(CASA.vencePronto)}, en 27 días.`,
-      "Todavía le queda contenido y está en un tratamiento activo, así que si lo van a usar es ahora. Si sobra, va a punto limpio de farmacia — nunca al WC ni a la basura."
-    ],
-    chips: [
-      { t:"Lo boté", ir:"boto" },
-      { t:"¿Puedo usar uno vencido igual?", ir:"vencido_no" },
-      { t:"Me duele el pecho", ir:"urgencia" }
-    ]
-  },
-
-  boto: {
-    bot: [ "Listo, lo saqué del botiquín. No te lo vuelvo a mencionar." ],
-    chips: [
-      { t:"¿Para qué sirve la levocetirizina?", ir:"deriva" },
-      { t:"Me duele el pecho", ir:"urgencia" }
-    ]
-  },
-
-  vencido_no: {
-    bot: [
-      "No lo uses. Un remedio vencido no se toma, aunque se vea bien.",
-      "Llévalo a un punto limpio de farmacia y listo."
-    ],
-    chips: [ { t:"¿Para qué sirve la levocetirizina?", ir:"deriva" } ]
-  },
-
-  /* ── El alma del agente: lo que NO hace ──────────────────── */
-  deriva: {
-    bot: [
-      "No lo sé — eso te lo explica bien tu médico o el químico de la farmacia.",
-      "Lo que sí te puedo decir es que la de Bruno es la del tratamiento del 15 de mayo: 3,5 mL cada 24 horas, de permanencia."
-    ],
-    chips: [
-      { t:"Me duele la guata, ¿qué tomo?", ir:"deriva_sintoma" },
-      { t:"¿Eres doctor de verdad?", ir:"no_soy_doctor" }
-    ]
-  },
-
-  deriva_dosis: {
-    bot: [
-      "Esa decisión es del médico, no mía. Yo solo repito lo que dice la receta: 3,5 mL cada 24 horas.",
-      "Si quieres cambiar la dosis, consúltalo antes con la Dra. Fernández."
-    ],
-    chips: [
-      { t:"Me duele la guata, ¿qué tomo?", ir:"deriva_sintoma" },
-      { t:"Sí, recuérdame las tomas", ir:"tomas" }
-    ]
-  },
-
-  deriva_sintoma: {
-    bot: [
-      "No puedo recomendarte un remedio: no soy médico y no sé qué te está pasando.",
-      "Si el dolor es fuerte o no cede, anda a un centro de salud."
-    ],
-    chips: [
-      { t:"Me duele el pecho", ir:"urgencia" },
-      { t:"¿Eres doctor de verdad?", ir:"no_soy_doctor" }
-    ]
-  },
-
-  urgencia: {
-    bot: [
-      "Eso necesita atención ahora, no por chat.",
-      "Llama al *SAMU 131* o anda al servicio de urgencia más cercano. Si fuera una intoxicación, el CITUC es 2 2635 3800.",
-      "Acá te espero."
-    ],
-    chips: [ { t:"Gracias", ir:"cierre" } ]
-  },
-
-  no_soy_doctor: {
-    bot: [
-      "No, no soy doctor. El “Doctor” es un cariño, no un título.",
-      "Yo soy el que lleva el inventario del botiquín de tu casa: qué hay, de quién es, hasta cuándo sirve y a quién le toca hoy. Cualquier duda médica te la va a responder mejor tu doctor."
-    ],
-    chips: [
-      { t:"Vivo con mi mamá Rosa y mi hijo Bruno", ir:"casa" },
-      { t:"📷 Foto de la caja de Losartán", ir:"registra_losartan", foto:"CAJA_LOSARTAN.JPG" }
-    ]
-  },
-
-  cierre: {
-    bot: [
-      "Cualquier cosa me escribes. Yo te aviso antes de que algo venza."
-    ],
-    chips: [
-      { t:"↻ Empezar de nuevo", ir:"__reiniciar" }
-    ]
-  },
-
-  /* Respuesta cuando escriben algo fuera del guion */
-  fuera: {
-    bot: [
-      "En esta demo manejo solo unas pocas conversaciones de ejemplo 🙂",
-      "Prueba con alguno de los botones de abajo — ahí está lo bueno."
-    ],
-    chips: [
-      { t:"📷 Foto de la caja de Losartán", ir:"registra_losartan", foto:"CAJA_LOSARTAN.JPG" },
-      { t:"📄 Mandar la receta de Bruno", ir:"receta", foto:"RECETA_15MAY.PDF" },
-      { t:"Me duele el pecho", ir:"urgencia" }
-    ]
-  }
-};
-
-/* Palabras sueltas → nodo, para quien escriba a mano */
-const CLAVES = [
-  [/urgen|pecho|ahog|sangr|desmay|convuls|intoxic|sobredos/i, "urgencia"],
-  [/kitadol|farmacia|comprar|compro/i,                        "kitadol"],
-  [/venc|caduc|expir/i,                                       "vencimientos"],
-  [/receta|pdf|doctora|prescrip/i,                            "receta"],
-  [/dosis|mitad|aument|subir/i,                               "deriva_dosis"],
-  [/duele|dolor|s(i|í)ntoma|fiebre|tomo/i,                    "deriva_sintoma"],
-  [/sirve|para qu(e|é)|interacci|mezcl|junto/i,               "deriva"],
-  [/doctor de verdad|eres doctor|m(e|é)dico de verdad/i,      "no_soy_doctor"],
-  [/losart(a|á)n|caja|foto/i,                                 "registra_losartan"],
-  [/listo|ya est(a|á)|tomad|confirm/i,                        "confirma"],
-  [/hola|buenas|hey/i,                                        "inicio"]
+  { cap: 5, quien:"dia", t:`${fmt(enDias(6)).toUpperCase()}` },
+  { quien:"yo",  t:"Botikin" },
+  { quien:"bot", t:() =>
+      "Tienes los siguientes medicamentos:\n\n" +
+      "<strong>Bruno</strong>\n" +
+      `• ⚠️ Paracetamol 100 mg/mL — 60 mL · vence en 27 días\n` +
+      "• Fluticasona 125 mcg — 120 dosis · vence 08/2027\n" +
+      "• Levocetirizina 2,5 mg/5 mL — 60 mL · vence 01/2027\n\n" +
+      "<strong>Rosa</strong>\n" +
+      `• Losartán 50 mg — 27 comprimidos · vence ${mesAno(F.losartan)}\n\n` +
+      "<strong>De la casa</strong>\n" +
+      "• Paracetamol 500 mg — 16 comprimidos · vence 11/2026\n" +
+      "• Ibuprofeno 400 mg — 4 comprimidos · vence 05/2027\n\n" +
+      `⚠️ 1 necesita atención.\n\n<em>Al ${fmt(hoy)}</em>` },
 ];
 
-/* ── Motor ───────────────────────────────────────────────── */
-const hilo   = document.getElementById("hilo");
-const zonaChips = document.getElementById("chips");
-const entrada = document.getElementById("entrada");
-let ocupado = false;
+/* ── Motor de reproducción ──────────────────────────────────── */
+const hilo = document.getElementById("hilo");
+const avance = document.getElementById("avance");
+const capitulos = [...document.querySelectorAll("#capitulos li")];
+const cierre = document.getElementById("cierre");
+const btnPausa = document.getElementById("pausa");
 
-function abajo(){ hilo.scrollTop = hilo.scrollHeight; }
+let i = 0, pausado = false, timer = null, corriendo = false;
 
-function separadorDia(){
-  const d = document.createElement("div");
-  d.className = "dia";
-  d.textContent = "HOY · " + fmt(hoy);
-  hilo.appendChild(d);
+const dormir = (ms) => new Promise((r) => {
+  timer = setTimeout(r, ms);
+});
+
+async function esperarSiPausado() {
+  while (pausado) await new Promise((r) => setTimeout(r, 120));
 }
 
-function burbuja(texto, mio){
+const hora = (() => {
+  let base = new Date(hoy); base.setHours(9, 12, 0);
+  return () => {
+    base = new Date(base.getTime() + (60 + Math.floor(Math.random()*90)) * 1000);
+    return `${base.getHours()}:${String(base.getMinutes()).padStart(2,"0")}`;
+  };
+})();
+
+function burbuja(html, mio) {
   const b = document.createElement("div");
   b.className = "msg" + (mio ? " yo" : "");
-  b.innerHTML = formatear(texto) + `<span class="hora">${hora()}</span>`;
-  hilo.appendChild(b); abajo();
+  b.innerHTML = html + `<span class="hora">${hora()}</span>`;
+  hilo.appendChild(b); hilo.scrollTop = hilo.scrollHeight;
 }
 
-function burbujaFoto(nombre){
+function adjunto(a) {
   const b = document.createElement("div");
-  b.className = "msg yo foto";
-  const esPdf = nombre.endsWith(".PDF");
-  b.innerHTML = `<div class="marco"><span>${esPdf ? "📄" : "🖼️"}</span>${nombre}</div>
+  b.className = "msg yo adjunto";
+  b.innerHTML = `<div class="marco"><span>${a.icono}</span>${a.nombre}</div>
                  <span class="hora">${hora()}</span>`;
-  hilo.appendChild(b); abajo();
+  hilo.appendChild(b); hilo.scrollTop = hilo.scrollHeight;
 }
 
-/* *negrita* al estilo WhatsApp, y escape de HTML */
-function formatear(t){
-  return t.replace(/[&<>]/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;" }[c]))
-          .replace(/\*(.+?)\*/g, "<strong>$1</strong>");
+function separador(texto) {
+  const d = document.createElement("div");
+  d.className = "dia"; d.textContent = texto;
+  hilo.appendChild(d); hilo.scrollTop = hilo.scrollHeight;
 }
 
-function escribiendo(on){
+function escribiendo(on) {
   let e = document.getElementById("esc");
-  if (on && !e){
+  if (on && !e) {
     e = document.createElement("div");
     e.id = "esc"; e.className = "escribiendo";
     e.innerHTML = "<i></i><i></i><i></i>";
-    hilo.appendChild(e); abajo();
+    hilo.appendChild(e); hilo.scrollTop = hilo.scrollHeight;
   } else if (!on && e) e.remove();
 }
 
-const dormir = ms => new Promise(r => setTimeout(r, ms));
-
-function pintarChips(lista){
-  zonaChips.innerHTML = "";
-  (lista || []).forEach(c => {
-    const b = document.createElement("button");
-    b.className = "chip"; b.textContent = c.t;
-    b.onclick = () => elegir(c);
-    zonaChips.appendChild(b);
+function marcarCapitulo(n) {
+  capitulos.forEach((li, k) => {
+    li.classList.toggle("on", k === n);
+    li.classList.toggle("hecho", k < n);
   });
 }
 
-async function elegir(c){
-  if (ocupado) return;
-  if (c.ir === "__reiniciar") return reiniciar();
-  if (c.foto) burbujaFoto(c.foto); else burbuja(c.t, true);
-  pintarChips([]);
-  await correr(c.ir);
-}
+async function reproducir() {
+  if (corriendo) return;
+  corriendo = true;
+  for (; i < GUION.length; i++) {
+    await esperarSiPausado();
+    const paso = GUION[i];
+    if (paso.cap !== undefined) marcarCapitulo(paso.cap);
+    avance.style.width = `${(i / (GUION.length - 1)) * 100}%`;
 
-async function correr(id){
-  const nodo = NODOS[id] || NODOS.fuera;
-  ocupado = true;
-  for (const linea of nodo.bot){
-    const texto = typeof linea === "function" ? linea() : linea;
+    if (paso.pausa) await dormir(paso.pausa);
+    await esperarSiPausado();
+
+    if (paso.quien === "dia") { separador(paso.t); await dormir(900); continue; }
+
+    if (paso.quien === "yo") {
+      await dormir(paso.adj ? 700 : 500);
+      await esperarSiPausado();
+      if (paso.adj) adjunto(paso.adj); else burbuja(paso.t, true);
+      await dormir(650);
+      continue;
+    }
+
+    // El bot "escribe": la espera crece con el largo del mensaje, con tope.
+    const texto = typeof paso.t === "function" ? paso.t() : paso.t;
     escribiendo(true);
-    await dormir(Math.min(1500, 380 + texto.length * 11));
+    await dormir(Math.min(2100, 600 + texto.length * 7));
+    await esperarSiPausado();
     escribiendo(false);
     burbuja(texto, false);
-    await dormir(220);
+    await dormir(900);
   }
-  ocupado = false;
-  pintarChips(nodo.chips);
+  avance.style.width = "100%";
+  marcarCapitulo(5);
+  await dormir(1400);
+  cierre.classList.add("ver");
+  corriendo = false;
 }
 
-async function enviarEscrito(){
-  const t = entrada.value.trim();
-  if (!t || ocupado) return;
-  entrada.value = "";
-  burbuja(t, true);
-  pintarChips([]);
-  const hallado = CLAVES.find(([re]) => re.test(t));
-  await correr(hallado ? hallado[1] : "fuera");
+function reiniciar() {
+  clearTimeout(timer);
+  hilo.innerHTML = ""; i = 0; corriendo = false; pausado = false;
+  btnPausa.textContent = "⏸ Pausar";
+  cierre.classList.remove("ver");
+  avance.style.width = "0";
+  marcarCapitulo(0);
+  reproducir();
 }
 
-function reiniciar(){
-  hilo.innerHTML = ""; zonaChips.innerHTML = ""; ocupado = false;
-  separadorDia();
-  correr("inicio");
-}
+btnPausa.onclick = () => {
+  pausado = !pausado;
+  btnPausa.textContent = pausado ? "▶ Continuar" : "⏸ Pausar";
+};
+document.getElementById("reiniciar").onclick = reiniciar;
+document.getElementById("devuelta").onclick = reiniciar;
 
-reiniciar();
+reproducir();
 </script>
 </body>
 </html>
