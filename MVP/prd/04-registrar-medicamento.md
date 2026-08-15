@@ -58,6 +58,27 @@ dosis. Lo que sí se te está acabando es el ibuprofeno: quedan 4."*
 - **NO2** — no adivinamos equivalencias entre marcas: las resuelve el ISP
 - **NO3** — no pedimos una auditoría inicial del botiquín completo
 - **NO4** — no recomendamos comprar ni dónde comprar
+- **NO5** — **nunca pedimos una segunda foto.** Lo que faltó en la primera se
+  pregunta por texto y el usuario lo dicta
+
+### Por qué el vencimiento se pregunta, no se fotografía
+
+La fecha casi nunca está en la cara principal del envase: va impresa o en
+relieve en una solapa lateral. La salida obvia sería pedir otra foto de esa
+solapa — y es la salida equivocada, por dos razones que apuntan al mismo lado:
+
+- **Cuesta.** Cada foto es una llamada de visión completa. Un dato de nueve
+  caracteres no justifica reprocesar una imagen entera.
+- **Cuesta más al usuario.** Pedirle que gire la caja, encuadre un relieve sin
+  contraste y saque otra foto es más fricción que dictar `03/2027`. Y el
+  relieve es justamente donde la visión falla, así que la segunda foto además
+  puede volver sin el dato.
+
+**La regla:** una foto entra, y todo lo que no se leyó de ella sale como
+pregunta de texto, una a la vez, diciendo dónde mirar.
+
+> *"¿Me dices la fecha de vencimiento? Está en una de las solapas del costado
+> de la caja, a veces marcada en relieve."*
 
 ---
 
@@ -143,8 +164,9 @@ CUANDO llega una foto de caja o boleta
              cantidad y fecha de vencimiento
 
   para cada dato que salió dudoso o vacío
-     → LO PREGUNTAMOS, uno a la vez, diciendo dónde mirarlo
+     → LO PREGUNTAMOS POR TEXTO, uno a la vez, diciendo dónde mirarlo
        "la fecha salió cortada, ¿me la dictas? está en la solapa"
+     → NUNCA pedimos otra foto: el usuario dicta, nosotros guardamos
 
   ENTONCES resolvemos el producto contra el ISP.
 
@@ -177,5 +199,5 @@ CUANDO ya tenemos el producto resuelto
 - ningún dato del envase se estima: se lee o se pregunta
 - el duplicado se avisa antes de que el usuario compre, no después
 - dos formas farmacéuticas distintas nunca son el mismo ítem
-- una foto basta para empezar; el resto lo conversamos
+- una foto basta para empezar; el resto se conversa, no se re-fotografía
 - si el ISP no resuelve el producto, lo decimos en vez de adivinar
