@@ -61,6 +61,7 @@ HOY                        DESPUÉS
 buscar en la App Store     alguien te pasa su link
   └─ descargar               └─ página de una pantalla
        └─ crear cuenta            └─ ingresas CORREO + tarjeta
+            └─ plan gratis             └─ (URL propia de Flow por persona)
             └─ plan gratis             └─ Flow cobra el primer mes
                  └─ paywall                 └─ te llega un código al correo
                       └─ abandono                 └─ se lo escribes al agente
@@ -76,6 +77,29 @@ buscar en la App Store     alguien te pasa su link
 ```
 
 **El plan (único):** **$3.990 CLP/mes**, todo incluido, por invitación.
+
+### El link de pago tiene que ser reutilizable
+
+Un *link de pago* de Flow (`flow.cl/uri/…`) apunta a **una transacción**, no a
+un producto. Redirige siempre al mismo token, así que **lo cobra una persona y
+después muere**: el segundo que entra ve *"Ya existe un pago para la
+transacción N° …"*.
+
+Sirve para cobrarle a alguien puntual, no para vender una suscripción.
+
+Lo que este producto necesita es **Flow Suscripciones**, que además resuelve
+el cobro mensual — un pago único tampoco se renueva solo. La integración es
+por API, en cuatro pasos:
+
+```
+plans/create        una vez: el plan de $3.990/mes
+customer/create     por cada persona que se suscribe
+customer/register   inscribe su tarjeta (Flow le muestra el formulario)
+subscription/create la amarra al plan y empieza a cobrar todos los meses
+```
+
+Cada suscriptor recibe su propia URL de registro de tarjeta, así que nunca
+hay un link compartido que se pueda consumir.
 
 ### Por qué el código, y no el teléfono en el formulario
 

@@ -155,10 +155,10 @@ Deno.serve(async (req) => {
       await enviar(
         telefono,
         "Hola 👋 Soy el Doctor Botikin, el que lleva la cuenta del botiquín de " +
-        "tu casa.\n\nPara empezar necesitas activar tu cuenta acá:\n" +
-        (Deno.env.get("FLOW_LINK_SUSCRIPCION") ?? "https://botikin.app") +
-        "\n\nCuando pagues te llega un código al correo, tipo ABCD-EFGH. " +
-        "Me lo escribes por acá y quedamos andando.",
+        "tu casa.\n\nPor ahora estamos en acceso anticipado y se entra por " +
+        "invitación. Escríbenos a soporte@botikin.app y te mandamos la tuya.\n\n" +
+        "Si ya tienes tu código —tipo ABCD-EFGH— escríbemelo por acá y " +
+        "quedamos andando al tiro.",
       );
       return new Response("sin hogar", { status: 200 });
     }
