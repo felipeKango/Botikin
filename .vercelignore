@@ -1,0 +1,8 @@
+MVP/_legacy
+MVP/supabase
+MVP/prd
+MVP/assets
+*.pdf
+*.pptx
+*.mp4
+.git

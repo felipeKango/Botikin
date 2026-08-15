@@ -92,8 +92,8 @@
   }
   .chat-top { background: var(--verde-wa); color: #fff; padding: 13px 16px;
               display: flex; align-items: center; gap: 11px; }
-  .chat-top .av { width: 38px; height: 38px; border-radius: 50%; background: var(--rojo);
-                  display: grid; place-items: center; font-size: 1.1rem; flex: none; }
+  .chat-top .av { width: 38px; height: 38px; border-radius: 50%; background: #fff;
+                  object-fit: cover; flex: none; }
   .chat-top b { font-size: .98rem; font-weight: 700; display: block; }
   .chat-top span { font-size: .74rem; opacity: .8; }
   .chat-cuerpo { padding: 16px 14px; display: flex; flex-direction: column; gap: 10px; }
@@ -176,8 +176,9 @@
       <a href="#como">Cómo funciona</a>
       <a href="#datos">De dónde salen los datos</a>
       <a href="#plan">Plan</a>
+      <a href="demo.html">Demo</a>
     </div>
-    <a class="btn" href="#plan">Quiero mi invitación</a>
+    <a class="btn" href="demo.html">Probar el agente</a>
   </div>
 </nav>
 
@@ -192,15 +193,15 @@
         Botikin es un agente de WhatsApp que lleva la cuenta por ti.
       </p>
       <div class="acciones">
-        <a class="btn" href="#plan">Quiero mi invitación</a>
-        <a class="btn fantasma" href="#como">Ver cómo funciona</a>
+        <a class="btn" href="demo.html">Pruébalo ahora →</a>
+        <a class="btn fantasma" href="https://wa.me/12018018270?text=Hola" target="_blank" rel="noopener">Escríbele por WhatsApp</a>
       </div>
-      <p class="nota-invitacion">Se entra solo por invitación de alguien que ya lo usa.</p>
+      <p class="nota-invitacion">El demo corre en tu navegador, sin instalar nada. La cuenta real se entra por invitación.</p>
     </div>
 
     <div class="chat">
       <div class="chat-top">
-        <div class="av">✚</div>
+        <img class="av" src="img/avatar.png" alt="">
         <div><b>Botikin</b><span>en línea</span></div>
       </div>
       <div class="chat-cuerpo">
@@ -256,7 +257,7 @@
       </div>
       <div class="chat">
         <div class="chat-top">
-          <div class="av">✚</div>
+          <img class="av" src="img/avatar.png" alt="">
           <div><b>Botikin</b><span>en línea</span></div>
         </div>
         <div class="chat-cuerpo">
@@ -341,7 +342,7 @@
     </div>
     <div class="chat">
       <div class="chat-top">
-        <div class="av">✚</div>
+        <img class="av" src="img/avatar.png" alt="">
         <div><b>Botikin</b><span>en línea</span></div>
       </div>
       <div class="chat-cuerpo">
