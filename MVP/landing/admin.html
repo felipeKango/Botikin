@@ -60,6 +60,7 @@
             padding:14px 16px; margin-bottom:8px; }
   .alerta.alto  { background:rgba(193,18,31,.13); border:1px solid rgba(193,18,31,.4); }
   .alerta.medio { background:rgba(217,154,43,.1); border:1px solid rgba(217,154,43,.35); }
+  .alerta.bajo  { background:rgba(251,243,231,.05); border:1px solid var(--borde); }
   .alerta b { display:block; font-size:.9rem; }
   .alerta span { font-size:.76rem; color:var(--gris); }
   .todobien { color:var(--verde); font-size:.9rem; display:flex; gap:9px; align-items:center; }
@@ -169,7 +170,7 @@ function pintar(d) {
   // Alertas primero: lo que está mal se ve antes que lo que está bien.
   $("alertas").innerHTML = d.alertas.length
     ? d.alertas.map((a) => `<div class="alerta ${a.nivel}">
-        <div>${a.nivel === "alto" ? "🔴" : "🟠"}</div>
+        <div>${a.nivel === "alto" ? "🔴" : a.nivel === "medio" ? "🟠" : "⚪"}</div>
         <div><b>${esc(a.texto)}</b><span>${esc(a.detalle ?? "")}</span></div></div>`).join("")
     : `<div class="alerta medio" style="background:rgba(63,169,107,.1);border-color:rgba(63,169,107,.3)">
          <div>🟢</div><div><b>Todo en orden</b><span>Ningún paso del circuito está roto.</span></div></div>`;

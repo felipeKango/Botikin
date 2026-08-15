@@ -108,7 +108,9 @@ export default async function handler(req, res) {
         { paso: "Código emitido",     valor: codigos.length,                     unidad: "códigos" },
         { paso: "Correo enviado",     valor: cuenta("sent"),                     unidad: "enviados",
           alerta: cuenta("sent") === 0 && codigos.length > 0
-            ? "ningún correo despachado: el emisor no está conectado" : null },
+            ? (process.env.RESEND_API_KEY || process.env.SMTP_PASSWORD
+                ? "emisor listo, pero ningún código ha salido todavía"
+                : "el emisor no está conectado") : null },
         { paso: "Código canjeado",    valor: cuenta("redeemed"),                 unidad: "canjes" },
         { paso: "Hogar activo",       valor: hogares,                            unidad: "casas" },
         { paso: "Botiquín con datos", valor: casasVivas,                         unidad: "casas" },
@@ -134,11 +136,20 @@ export default async function handler(req, res) {
       servicios: {
         supabase: { ok: true, detalle: "consultado en esta llamada" },
         kapso,
-        correo: {
-          ok: cuenta("sent") > 0,
-          detalle: cuenta("sent") > 0 ? "hay correos despachados"
-                                      : "sin RESEND_API_KEY: los códigos se entregan a mano",
-        },
+        // Configurado ≠ funcionando. El panel distingue las dos cosas:
+        // puede estar bien configurado y todavía no haber mandado nada.
+        correo: (() => {
+          const via = process.env.RESEND_API_KEY ? "Resend"
+                    : process.env.SMTP_PASSWORD  ? `SMTP · ${process.env.SMTP_HOST ?? "?"}`
+                    : null;
+          if (!via) return { ok: false, detalle: "sin configurar: los códigos se entregan a mano" };
+          return {
+            ok: true,
+            detalle: cuenta("sent")
+              ? `${via} · ${cuenta("sent")} código${cuenta("sent") === 1 ? "" : "s"} despachado${cuenta("sent") === 1 ? "" : "s"}`
+              : `${via} · configurado, sin códigos enviados todavía`,
+          };
+        })(),
       },
 
       alertas: [
@@ -157,9 +168,16 @@ export default async function handler(req, res) {
           ? [{ nivel: "medio", texto: `el número se muestra como "${kapso.nombre}"`,
                detalle: "quien reciba el mensaje no va a reconocer la marca" }]
           : []),
-        ...(cuenta("sent") === 0 && codigos.length > 0
+        ...(!process.env.RESEND_API_KEY && !process.env.SMTP_PASSWORD && codigos.length
           ? [{ nivel: "medio", texto: "el envío de correos no está conectado",
                detalle: "cada código hay que entregarlo a mano" }]
+          : []),
+        // SMTP por buzón propio: sirve hoy, pero tiene techo y no avisa rebotes.
+        ...(!process.env.RESEND_API_KEY && process.env.SMTP_PASSWORD
+          ? [{ nivel: "bajo",
+               texto: "el correo sale por SMTP del buzón, no por un proveedor",
+               detalle: "límite de unos cientos al día y sin registro de rebotes: " +
+                        "si uno no llega, no nos enteramos" }]
           : []),
       ],
 
