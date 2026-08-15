@@ -49,3 +49,50 @@ desde el que llegó el mensaje.
 la recomendación es quedarse con `access_codes` (mejor generador —
 `gen_random_bytes` sin sesgo de módulo— y emisión idempotente por correo) y
 reemplazar solo el canje por el que crea el hogar desde WhatsApp.
+
+## Cómo se envía hoy: SMTP por GoDaddy
+
+`api/_correo.js` elige el camino solo, según qué variables existan:
+
+| variable presente | camino |
+|---|---|
+| `RESEND_API_KEY` | Resend |
+| `SMTP_PASSWORD` | SMTP directo por el buzón |
+| ninguna | no envía, y lo dice |
+
+Cambiar de uno a otro es agregar una variable y borrar la otra. El resto del
+código no se entera.
+
+### Configuración actual
+
+```
+SMTP_HOST  smtpout.secureserver.net    ← GoDaddy Workspace, no Microsoft 365
+SMTP_PORT  465                          ← SSL directo
+SMTP_USER  soporte@botikin.app
+SMTP_PASSWORD  ← la contraseña del buzón, en Vercel
+```
+
+El MX del dominio es `smtp.secureserver.net`, que es la plataforma propia de
+GoDaddy. Si algún día migra a Microsoft 365, el MX pasa a
+`*.mail.protection.outlook.com` y hay que cambiar a `smtp.office365.com:587`.
+
+### Probar
+
+```bash
+curl -X POST https://botikin.app/api/probar-correo \
+  -H "x-panel-clave: $PANEL_CLAVE" \
+  -H "content-type: application/json" \
+  -d '{"para":"tu@correo.cl"}'
+```
+
+### Lo que estamos aceptando al usar SMTP
+
+- **Límite diario** de unos cientos de correos. Con decenas de usuarios no se
+  nota; con cientos, sí.
+- **Sin registro de rebotes.** Si un correo no llega, no nos enteramos.
+- **La contraseña del buzón es la credencial del servidor.** Si se filtra, no
+  solo se puede enviar: se puede *leer* el correo de soporte. Con Resend la
+  llave solo sirve para enviar.
+
+Migrar a Resend son tres registros DNS en el subdominio `send.` — el correo
+de GoDaddy sigue funcionando igual porque no se toca la raíz.
