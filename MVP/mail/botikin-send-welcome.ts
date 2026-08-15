@@ -7,7 +7,7 @@
 //
 // Secrets:
 //   supabase secrets set RESEND_API_KEY=re_xxx
-//   supabase secrets set BOTIKIN_APP_URL=https://app.botikin.cl
+//   supabase secrets set BOTIKIN_APP_URL=https://botikin.app
 //   supabase secrets set BOTIKIN_LOGO_URL=https://<proj>.supabase.co/storage/v1/object/public/brand/botikin-logo-320.png
 //
 // Deploy:  supabase functions deploy send-welcome
@@ -23,7 +23,7 @@ const supabase = createClient(
   Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!, // service_role: única forma de emitir códigos
 );
 
-const APP_URL  = Deno.env.get("BOTIKIN_APP_URL")  ?? "https://app.botikin.cl";
+const APP_URL  = Deno.env.get("BOTIKIN_APP_URL")  ?? "https://botikin.app";
 const LOGO_URL = Deno.env.get("BOTIKIN_LOGO_URL")!;
 
 const fmtFecha = (iso: string) =>
@@ -66,7 +66,7 @@ Deno.serve(async (req) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        from: "Botikin <hola@botikin.cl>",
+        from: "Botikin <soporte@botikin.app>",
         to: [row.email],
         subject: `Tu código de acceso a Botikin: ${row.code}`,
         html,
