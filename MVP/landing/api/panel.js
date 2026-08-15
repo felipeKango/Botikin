@@ -70,6 +70,7 @@ export default async function handler(req, res) {
     const [
       pagos, codigos, hogares, mensajesHoy, medicamentos, integrantes,
       tratamientos, recetas, ultimosPagos, pendientes, casas, kapso,
+      vencidosArrastrados,
     ] = await Promise.all([
       filas("pagos?select=monto,estado,pagado_el"),
       filas("access_codes?select=status,issued_at,expires_at,email,code,sent_at"),
@@ -83,6 +84,9 @@ export default async function handler(req, res) {
       filas("access_codes?select=code,email,issued_at,expires_at,status,sent_at&status=in.(issued,sent)&order=issued_at.desc&limit=10"),
       filas("hogares?select=id,telefono,onboarding,created_at,integrantes(id),medicamentos(id),conversaciones(ultimo_mensaje_usuario)&order=created_at.desc&limit=10"),
       saludKapso(),
+      // Un tratamiento con fecha pasada que sigue "activo" es un aviso de
+      // toma que puede salir por un tratamiento que ya terminó.
+      contar("tratamientos", `estado=eq.activo&duracion=eq.dias&fecha_termino=lt.${hoy}`),
     ]);
 
     const exitosos = pagos.filter((p) => p.estado === "exitoso");
@@ -91,30 +95,32 @@ export default async function handler(req, res) {
 
     // El fallo más caro del producto: pagó y nunca entró. Silencioso,
     // porque nadie reclama de inmediato — simplemente no vuelve.
-    const pagadosSinCanjear = pendientes.filter((c) => {
-      const dias = (ahora - Date.parse(c.issued_at)) / 864e5;
-      return dias >= 1;
-    });
+    const pagadosSinCanjear = pendientes.filter(
+      (c) => (ahora - Date.parse(c.issued_at)) / 864e5 >= 1);
 
-    const casasVivas = casas.filter((c) => (c.medicamentos ?? []).length > 0).length;
+    const casasVivas   = casas.filter((c) => (c.medicamentos ?? []).length > 0).length;
+    const casasConGente = casas.filter((c) => (c.integrantes ?? []).length > 0).length;
 
     res.setHeader("cache-control", "no-store");
     res.status(200).json({
       generado: new Date().toISOString(),
 
-      // El circuito, paso a paso. Cada uno con lo que hay que mirar.
+      // El embudo: solo pasos por los que pasa la MISMA persona, en orden.
+      // El envío del correo no va acá — no es una etapa donde la gente se
+      // caiga, es una entrega. Mezclarlos producía un "se pierden 1" falso.
       circuito: [
-        { paso: "Pago en Flow",       valor: exitosos.length,                    unidad: "cobros" },
-        { paso: "Código emitido",     valor: codigos.length,                     unidad: "códigos" },
-        { paso: "Correo enviado",     valor: cuenta("sent"),                     unidad: "enviados",
-          alerta: cuenta("sent") === 0 && codigos.length > 0
-            ? (process.env.RESEND_API_KEY || process.env.SMTP_PASSWORD
-                ? "emisor listo, pero ningún código ha salido todavía"
-                : "el emisor no está conectado") : null },
-        { paso: "Código canjeado",    valor: cuenta("redeemed"),                 unidad: "canjes" },
-        { paso: "Hogar activo",       valor: hogares,                            unidad: "casas" },
-        { paso: "Botiquín con datos", valor: casasVivas,                         unidad: "casas" },
+        { paso: "Pagó",               valor: exitosos.length,     unidad: "cobros" },
+        { paso: "Recibió su código",  valor: codigos.length,      unidad: "códigos" },
+        { paso: "Activó por WhatsApp", valor: cuenta("redeemed"), unidad: "canjes" },
+        { paso: "Contó su casa",      valor: casasConGente,       unidad: "casas" },
+        { paso: "Cargó un remedio",   valor: casasVivas,          unidad: "casas" },
       ],
+
+      // La entrega del correo se mide aparte de la conversión.
+      entrega: {
+        despachados: cuenta("sent"),
+        pendientes: codigos.filter((c) => c.status === "issued").length,
+      },
 
       dinero: {
         recaudado: exitosos.reduce((s, p) => s + p.monto, 0),
@@ -172,6 +178,12 @@ export default async function handler(req, res) {
           ? [{ nivel: "medio", texto: "el envío de correos no está conectado",
                detalle: "cada código hay que entregarlo a mano" }]
           : []),
+        ...(vencidosArrastrados
+          ? [{ nivel: "alto",
+               texto: `${vencidosArrastrados} tratamiento${vencidosArrastrados === 1 ? "" : "s"} terminado${vencidosArrastrados === 1 ? "" : "s"} sigue${vencidosArrastrados === 1 ? "" : "n"} marcado${vencidosArrastrados === 1 ? "" : "s"} como activo${vencidosArrastrados === 1 ? "" : "s"}`,
+               detalle: "podría recordarse una toma de algo que ya se terminó · " +
+                        "correr cerrar_tratamientos_vencidos()" }]
+          : []),
         // SMTP por buzón propio: sirve hoy, pero tiene techo y no avisa rebotes.
         ...(!process.env.RESEND_API_KEY && process.env.SMTP_PASSWORD
           ? [{ nivel: "bajo",
@@ -183,6 +195,7 @@ export default async function handler(req, res) {
 
       ultimosPagos,
       pendientes,
+      vencidosArrastrados,
       casas: casas.map((c) => ({
         telefono: c.telefono,
         onboarding: c.onboarding,

@@ -123,6 +123,9 @@
   <h2>Servicios</h2>
   <div class="servicios" id="servicios"></div>
 
+  <h2>Entrega del correo</h2>
+  <div class="cifras" id="entrega"></div>
+
   <h2>Uso</h2>
   <div class="cifras" id="uso"></div>
 
@@ -200,6 +203,10 @@ function pintar(d) {
       <div><b>Correo</b><span>${esc(d.servicios.correo.detalle)}</span></div></div>
     <div class="srv"><div class="luz si"></div>
       <div><b>Recaudado</b><span>${clp(d.dinero.recaudado)} en ${d.dinero.cobros} cobro${d.dinero.cobros===1?"":"s"}${d.dinero.fallidos?` · ${d.dinero.fallidos} fallido${d.dinero.fallidos===1?"":"s"}`:""}</span></div></div>`;
+
+  $("entrega").innerHTML =
+    `<div class="cifra"><b>${d.entrega.despachados}</b><span>códigos enviados por correo</span></div>` +
+    `<div class="cifra"><b>${d.entrega.pendientes}</b><span>emitidos sin despachar</span></div>`;
 
   $("uso").innerHTML = [
     ["Casas", d.uso.hogares], ["Personas", d.uso.integrantes],

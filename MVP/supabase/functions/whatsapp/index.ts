@@ -105,9 +105,21 @@ Deno.serve(async (req) => {
     return new Response("json inválido", { status: 400 });
   }
 
-  const m = cuerpo.message;
-  // Solo mensajes entrantes: los nuestros vuelven por el mismo webhook.
-  if (!m || m.kapso?.direction !== "inbound") return new Response("ignorado", { status: 200 });
+  // Kapso agrupa las ráfagas: si alguien manda cuatro fotos seguidas, llegan
+  // en un solo lote. Eso importa mucho — antes cada foto abría un turno
+  // aparte, y el agente contestaba cuatro veces sin saber de las otras tres,
+  // repitiendo "tu familia ya está registrada" en cada una.
+  //
+  // Con el búfer activo TODA entrega viene en lote, incluso de un mensaje.
+  const lote: Record<string, never>[] = cuerpo.batch
+    ? (cuerpo.data ?? []).map((e: Record<string, never>) => e.message).filter(Boolean)
+    : (cuerpo.message ? [cuerpo.message] : []);
+
+  const entrantes = lote.filter((x) => x?.kapso?.direction === "inbound");
+  if (entrantes.length === 0) return new Response("ignorado", { status: 200 });
+
+  // El último manda para identidad y para el candado anti-duplicado.
+  const m = entrantes[entrantes.length - 1];
 
   const telefono = "+" + String(m.from).replace(/\D/g, "");
   const db = admin();
@@ -117,12 +129,16 @@ Deno.serve(async (req) => {
     const { data: visto } = await db.from("mensajes").select("id").eq("wamid", m.id).maybeSingle();
     if (visto) return new Response("duplicado", { status: 200 });
 
+    const textoDe = (x: Record<string, never>) =>
+      x.text?.body ?? x.image?.caption ?? x.document?.caption ?? "";
+
     // El teléfono ES la identidad. Sin hogar, hay dos caminos: canjear un
     // código de activación, o ir a pagar.
     let { data: hogar } = await db.from("hogares").select("id").eq("telefono", telefono).maybeSingle();
 
     if (!hogar) {
-      const texto = m.text?.body ?? "";
+      // En un lote, el código puede venir en cualquiera de los mensajes.
+      const texto = entrantes.map(textoDe).find((t) => extraerCodigo(t)) ?? textoDe(m);
       const posible = extraerCodigo(texto);
 
       if (posible) {
@@ -170,8 +186,8 @@ Deno.serve(async (req) => {
     );
 
     // "Botikin" a secas es un comando, no una conversación: sale sin modelo.
-    const soloTexto = m.text?.body ?? "";
-    if (esComandoBotikin(soloTexto)) {
+    const soloTexto = textoDe(m);
+    if (entrantes.length === 1 && esComandoBotikin(soloTexto)) {
       const vista = await verBotiquin(db, hogar.id);
       await enviar(telefono, vista);
       await db.from("mensajes").insert([
@@ -181,23 +197,42 @@ Deno.serve(async (req) => {
       return new Response("comando", { status: 200 });
     }
 
-    // Armamos la entrada: texto, foto, o ambos.
+    // Armamos la entrada con TODO el lote: el agente ve las cuatro fotos de
+    // una vez y responde una sola cosa coherente.
     const entrada: Record<string, unknown>[] = [];
-    if (m.kapso?.has_media && m.kapso?.media_url) {
-      const { tipo, base64 } = await bajarMedio(m.kapso.media_url);
-      entrada.push(
-        tipo === "application/pdf"
-          ? { type: "document", source: { type: "base64", media_type: tipo, data: base64 } }
-          : { type: "image", source: { type: "base64", media_type: tipo, data: base64 } },
-      );
-    }
-    const texto = m.text?.body ?? m.image?.caption ?? m.document?.caption ?? "";
-    entrada.push({ type: "text", text: texto || "(el usuario mandó un archivo sin texto)" });
+    const textos: string[] = [];
 
-    await db.from("mensajes").insert({
-      hogar_id: hogar.id, direccion: "entrante",
-      tipo: m.type, texto, wamid: m.id,
+    for (const x of entrantes) {
+      if (x.kapso?.has_media && x.kapso?.media_url) {
+        try {
+          const { tipo, base64 } = await bajarMedio(x.kapso.media_url);
+          entrada.push(
+            tipo === "application/pdf"
+              ? { type: "document", source: { type: "base64", media_type: tipo, data: base64 } }
+              : { type: "image", source: { type: "base64", media_type: tipo, data: base64 } },
+          );
+        } catch (e) {
+          console.error("medio no descargado:", e);
+        }
+      }
+      const t = textoDe(x);
+      if (t) textos.push(t);
+    }
+
+    const texto = textos.join("\n");
+    const adjuntos = entrada.length;
+    entrada.push({
+      type: "text",
+      text: texto ||
+        (adjuntos > 1
+          ? `(el usuario mandó ${adjuntos} archivos juntos, sin texto)`
+          : "(el usuario mandó un archivo sin texto)"),
     });
+
+    await db.from("mensajes").insert(entrantes.map((x) => ({
+      hogar_id: hogar.id, direccion: "entrante",
+      tipo: x.type, texto: textoDe(x), wamid: x.id,
+    })));
 
     // Los últimos turnos, para que la conversación tenga memoria corta.
     const { data: previos } = await db.from("mensajes")
