@@ -1,0 +1,570 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		07E2F40CB846F402E5DB66ED /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73F39FA2ED50D36A1BF09E86 /* Theme.swift */; };
+		11B7EFC0069566A1FF26EEC9 /* NotificationsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E093690F47352CD648545AC /* NotificationsManager.swift */; };
+		2D9D9CBBDBBF7898A5F3CFA6 /* CameraPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD0AEA0830015D437C871DA7 /* CameraPicker.swift */; };
+		4357BF2C5723FF18A2368CD0 /* TokensViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA4EEC644B3AAAD369414986 /* TokensViewModel.swift */; };
+		43D8A8AAFBF67667918CB72D /* WhatsAppView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 118FDA2D71882180DAF85542 /* WhatsAppView.swift */; };
+		4C3085E7AE8C3883532B2298 /* HistorialView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 800C5FD8092DA970C47AE570 /* HistorialView.swift */; };
+		5269BFFDFE2DAE20E3A3E9D7 /* BotikinKit in Frameworks */ = {isa = PBXBuildFile; productRef = 3E17A82EF04E39534087D583 /* BotikinKit */; };
+		5329CE30F6CB20493D9BEEED /* TokensView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E54F57958E8ADBCA71735037 /* TokensView.swift */; };
+		692FB08F2FEF2EE3B70D7CD4 /* AppConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43F8374846A5B01068B25D2D /* AppConfig.swift */; };
+		6A967A4E9966D1DA42C7F394 /* AuthViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEFEA40B669CD756C9047B45 /* AuthViewModel.swift */; };
+		6C2F7E3BF61DE6BE88409505 /* BotikinApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F22308D4433C461D161DA6E /* BotikinApp.swift */; };
+		829F87159655E2653627BD10 /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33572BE3DA5B06E69FE452F4 /* MainTabView.swift */; };
+		846AB80A8F63C0BFC5EEC36A /* Secrets.example.plist in Resources */ = {isa = PBXBuildFile; fileRef = 2039E4604306C017D6553650 /* Secrets.example.plist */; };
+		85DE6CFD5963294F640038F3 /* MedicineFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 750C646F03D9192F9C8CDB9D /* MedicineFormView.swift */; };
+		8CB55D535764F7B39C4BEFBF /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70FC9347D1429CEE00864561 /* LoginView.swift */; };
+		91C81182308ED017875CC0A7 /* Secrets.plist in Resources */ = {isa = PBXBuildFile; fileRef = 00DDEAF2DAD0B445700CF2B5 /* Secrets.plist */; };
+		99B4C66AD9301D041C6BD933 /* PerfilView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F352416D154ACCFB5A9B2C6 /* PerfilView.swift */; };
+		9A0988416448417C91B8B007 /* SessionStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8109766568B370A2BB10A8AD /* SessionStore.swift */; };
+		B92D8FD89E9EFC265818CA19 /* KeychainStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDDAA5CA0EB3E8BE3F90CD15 /* KeychainStore.swift */; };
+		BAE2E08D8E5F3997D13CBD67 /* BotiquinViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F36E462396DBB7F340067576 /* BotiquinViewModel.swift */; };
+		BEAD0A50B83D2ED3E49D8903 /* SuscripcionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9156A5FF34C28D4F633CCE07 /* SuscripcionViewModel.swift */; };
+		C0675E1A72102233CA7CAA1B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3552F74A85C890C9609E300E /* Assets.xcassets */; };
+		C9457CB8A4929E20EAB3B00C /* WhatsAppViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BC78E796D54346ED822D804 /* WhatsAppViewModel.swift */; };
+		CFF6EF85A6B32E69EDF89EDF /* RecetaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 595A7EDCC7F4E55290D38329 /* RecetaView.swift */; };
+		D1ADF9968DD967F54CF5C0D7 /* HistorialViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEE49ABE437150199604A770 /* HistorialViewModel.swift */; };
+		E543CFEC46D472AC966332D6 /* RecetaViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 122889F6564980239140FAFD /* RecetaViewModel.swift */; };
+		E74032B2D8E10EFB4284BE99 /* BotiquinView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A6CF0D7548015FD184BFC5D /* BotiquinView.swift */; };
+		EA82B9463D9FDE3917E37C35 /* Components.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C73D741FA79CE02AC537099 /* Components.swift */; };
+		F388A12D6A52B1C954D35D13 /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA8215C16B30399B571DEBB2 /* APIClient.swift */; };
+		FBA0D453CD50288573CD230E /* SuscripcionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C555E0ADB69FD5DB91583DB /* SuscripcionView.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		00DDEAF2DAD0B445700CF2B5 /* Secrets.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Secrets.plist; sourceTree = "<group>"; };
+		0475DBCF22D640CA88F68656 /* BotikinKit */ = {isa = PBXFileReference; lastKnownFileType = folder; name = BotikinKit; path = BotikinKit; sourceTree = SOURCE_ROOT; };
+		09BD2C71DB710B43573BC7D8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		118FDA2D71882180DAF85542 /* WhatsAppView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhatsAppView.swift; sourceTree = "<group>"; };
+		122889F6564980239140FAFD /* RecetaViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecetaViewModel.swift; sourceTree = "<group>"; };
+		1BC78E796D54346ED822D804 /* WhatsAppViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhatsAppViewModel.swift; sourceTree = "<group>"; };
+		2039E4604306C017D6553650 /* Secrets.example.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Secrets.example.plist; sourceTree = "<group>"; };
+		33572BE3DA5B06E69FE452F4 /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
+		3552F74A85C890C9609E300E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		3C555E0ADB69FD5DB91583DB /* SuscripcionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuscripcionView.swift; sourceTree = "<group>"; };
+		3E093690F47352CD648545AC /* NotificationsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationsManager.swift; sourceTree = "<group>"; };
+		3F22308D4433C461D161DA6E /* BotikinApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BotikinApp.swift; sourceTree = "<group>"; };
+		43F8374846A5B01068B25D2D /* AppConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConfig.swift; sourceTree = "<group>"; };
+		595A7EDCC7F4E55290D38329 /* RecetaView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecetaView.swift; sourceTree = "<group>"; };
+		5A6CF0D7548015FD184BFC5D /* BotiquinView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BotiquinView.swift; sourceTree = "<group>"; };
+		70FC9347D1429CEE00864561 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
+		73F39FA2ED50D36A1BF09E86 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
+		750C646F03D9192F9C8CDB9D /* MedicineFormView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MedicineFormView.swift; sourceTree = "<group>"; };
+		7A736238D8B2E984DD94FF1F /* Botikin.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Botikin.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		800C5FD8092DA970C47AE570 /* HistorialView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistorialView.swift; sourceTree = "<group>"; };
+		8109766568B370A2BB10A8AD /* SessionStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionStore.swift; sourceTree = "<group>"; };
+		8C73D741FA79CE02AC537099 /* Components.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Components.swift; sourceTree = "<group>"; };
+		9156A5FF34C28D4F633CCE07 /* SuscripcionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuscripcionViewModel.swift; sourceTree = "<group>"; };
+		9F352416D154ACCFB5A9B2C6 /* PerfilView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PerfilView.swift; sourceTree = "<group>"; };
+		BA8215C16B30399B571DEBB2 /* APIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIClient.swift; sourceTree = "<group>"; };
+		BDDAA5CA0EB3E8BE3F90CD15 /* KeychainStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainStore.swift; sourceTree = "<group>"; };
+		DD0AEA0830015D437C871DA7 /* CameraPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraPicker.swift; sourceTree = "<group>"; };
+		E54F57958E8ADBCA71735037 /* TokensView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokensView.swift; sourceTree = "<group>"; };
+		EA4EEC644B3AAAD369414986 /* TokensViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokensViewModel.swift; sourceTree = "<group>"; };
+		EEFEA40B669CD756C9047B45 /* AuthViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthViewModel.swift; sourceTree = "<group>"; };
+		F36E462396DBB7F340067576 /* BotiquinViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BotiquinViewModel.swift; sourceTree = "<group>"; };
+		FEE49ABE437150199604A770 /* HistorialViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistorialViewModel.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		D320A0A6D42583EA31CE472B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5269BFFDFE2DAE20E3A3E9D7 /* BotikinKit in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		0CE32EEA40BB8CA88C8A9B0C /* Networking */ = {
+			isa = PBXGroup;
+			children = (
+				BA8215C16B30399B571DEBB2 /* APIClient.swift */,
+			);
+			path = Networking;
+			sourceTree = "<group>";
+		};
+		0D0DDCA74928F79CB681067B /* Theme */ = {
+			isa = PBXGroup;
+			children = (
+				8C73D741FA79CE02AC537099 /* Components.swift */,
+				73F39FA2ED50D36A1BF09E86 /* Theme.swift */,
+			);
+			path = Theme;
+			sourceTree = "<group>";
+		};
+		0E90435C7C6C5E05BB8A70C2 /* Packages */ = {
+			isa = PBXGroup;
+			children = (
+				0475DBCF22D640CA88F68656 /* BotikinKit */,
+			);
+			name = Packages;
+			sourceTree = "<group>";
+		};
+		137A1B381D6920148F54E12B /* Botikin */ = {
+			isa = PBXGroup;
+			children = (
+				A9A62E479EC6A1A2BB2C1C84 /* App */,
+				202A8B46BA0941D40E130E6E /* Core */,
+				EC87EECAAAC29D5EE46C0A9C /* Modules */,
+				85E8861480D030DF22D844F5 /* Resources */,
+			);
+			path = Botikin;
+			sourceTree = "<group>";
+		};
+		202A8B46BA0941D40E130E6E /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				43F8374846A5B01068B25D2D /* AppConfig.swift */,
+				BDDAA5CA0EB3E8BE3F90CD15 /* KeychainStore.swift */,
+				8109766568B370A2BB10A8AD /* SessionStore.swift */,
+				0CE32EEA40BB8CA88C8A9B0C /* Networking */,
+				0D0DDCA74928F79CB681067B /* Theme */,
+			);
+			path = Core;
+			sourceTree = "<group>";
+		};
+		219758F88CF9D62AA261BD66 /* WhatsApp */ = {
+			isa = PBXGroup;
+			children = (
+				118FDA2D71882180DAF85542 /* WhatsAppView.swift */,
+				1BC78E796D54346ED822D804 /* WhatsAppViewModel.swift */,
+			);
+			path = WhatsApp;
+			sourceTree = "<group>";
+		};
+		6CAD9F8E18F70EE600523C6D /* Botiquin */ = {
+			isa = PBXGroup;
+			children = (
+				5A6CF0D7548015FD184BFC5D /* BotiquinView.swift */,
+				F36E462396DBB7F340067576 /* BotiquinViewModel.swift */,
+				750C646F03D9192F9C8CDB9D /* MedicineFormView.swift */,
+			);
+			path = Botiquin;
+			sourceTree = "<group>";
+		};
+		75D81B2F809402850CB8886B /* Historial */ = {
+			isa = PBXGroup;
+			children = (
+				800C5FD8092DA970C47AE570 /* HistorialView.swift */,
+				FEE49ABE437150199604A770 /* HistorialViewModel.swift */,
+			);
+			path = Historial;
+			sourceTree = "<group>";
+		};
+		85E8861480D030DF22D844F5 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				3552F74A85C890C9609E300E /* Assets.xcassets */,
+				09BD2C71DB710B43573BC7D8 /* Info.plist */,
+				2039E4604306C017D6553650 /* Secrets.example.plist */,
+				00DDEAF2DAD0B445700CF2B5 /* Secrets.plist */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		8E9456CE5748667FC7D8A9B5 = {
+			isa = PBXGroup;
+			children = (
+				137A1B381D6920148F54E12B /* Botikin */,
+				0E90435C7C6C5E05BB8A70C2 /* Packages */,
+				F6FFDD1E0384E2165EDCD7F2 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		969449C3AFBD8A7A2C85FE0F /* Alertas */ = {
+			isa = PBXGroup;
+			children = (
+				3E093690F47352CD648545AC /* NotificationsManager.swift */,
+			);
+			path = Alertas;
+			sourceTree = "<group>";
+		};
+		9BE3711622018258DC119709 /* Suscripcion */ = {
+			isa = PBXGroup;
+			children = (
+				3C555E0ADB69FD5DB91583DB /* SuscripcionView.swift */,
+				9156A5FF34C28D4F633CCE07 /* SuscripcionViewModel.swift */,
+			);
+			path = Suscripcion;
+			sourceTree = "<group>";
+		};
+		A9A62E479EC6A1A2BB2C1C84 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				3F22308D4433C461D161DA6E /* BotikinApp.swift */,
+				33572BE3DA5B06E69FE452F4 /* MainTabView.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		B3ED768EFC367F879D309B06 /* Tokens */ = {
+			isa = PBXGroup;
+			children = (
+				E54F57958E8ADBCA71735037 /* TokensView.swift */,
+				EA4EEC644B3AAAD369414986 /* TokensViewModel.swift */,
+			);
+			path = Tokens;
+			sourceTree = "<group>";
+		};
+		CBAD4E617F5B0DE6CB18C926 /* Receta */ = {
+			isa = PBXGroup;
+			children = (
+				DD0AEA0830015D437C871DA7 /* CameraPicker.swift */,
+				595A7EDCC7F4E55290D38329 /* RecetaView.swift */,
+				122889F6564980239140FAFD /* RecetaViewModel.swift */,
+			);
+			path = Receta;
+			sourceTree = "<group>";
+		};
+		EC3C3AA74FF416EE3FEEAB7E /* Auth */ = {
+			isa = PBXGroup;
+			children = (
+				EEFEA40B669CD756C9047B45 /* AuthViewModel.swift */,
+				70FC9347D1429CEE00864561 /* LoginView.swift */,
+				9F352416D154ACCFB5A9B2C6 /* PerfilView.swift */,
+			);
+			path = Auth;
+			sourceTree = "<group>";
+		};
+		EC87EECAAAC29D5EE46C0A9C /* Modules */ = {
+			isa = PBXGroup;
+			children = (
+				969449C3AFBD8A7A2C85FE0F /* Alertas */,
+				EC3C3AA74FF416EE3FEEAB7E /* Auth */,
+				6CAD9F8E18F70EE600523C6D /* Botiquin */,
+				75D81B2F809402850CB8886B /* Historial */,
+				CBAD4E617F5B0DE6CB18C926 /* Receta */,
+				9BE3711622018258DC119709 /* Suscripcion */,
+				B3ED768EFC367F879D309B06 /* Tokens */,
+				219758F88CF9D62AA261BD66 /* WhatsApp */,
+			);
+			path = Modules;
+			sourceTree = "<group>";
+		};
+		F6FFDD1E0384E2165EDCD7F2 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				7A736238D8B2E984DD94FF1F /* Botikin.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		2DFE02F58F1C6A60E6A6A718 /* Botikin */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 9D7FC6EB46F31B1F56C9B153 /* Build configuration list for PBXNativeTarget "Botikin" */;
+			buildPhases = (
+				516D6782AF557192EE6D20F8 /* Sources */,
+				1C0DF92E5916649964CB09EB /* Resources */,
+				D320A0A6D42583EA31CE472B /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Botikin;
+			packageProductDependencies = (
+				3E17A82EF04E39534087D583 /* BotikinKit */,
+			);
+			productName = Botikin;
+			productReference = 7A736238D8B2E984DD94FF1F /* Botikin.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		733D538FA30AE497D3C8808E /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					2DFE02F58F1C6A60E6A6A718 = {
+						DevelopmentTeam = "";
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = ABAB201729259FA18C399CDD /* Build configuration list for PBXProject "Botikin" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 8E9456CE5748667FC7D8A9B5;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				88F8CE3028E147159D5D0436 /* XCLocalSwiftPackageReference "BotikinKit" */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = F6FFDD1E0384E2165EDCD7F2 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				2DFE02F58F1C6A60E6A6A718 /* Botikin */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		1C0DF92E5916649964CB09EB /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C0675E1A72102233CA7CAA1B /* Assets.xcassets in Resources */,
+				846AB80A8F63C0BFC5EEC36A /* Secrets.example.plist in Resources */,
+				91C81182308ED017875CC0A7 /* Secrets.plist in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		516D6782AF557192EE6D20F8 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F388A12D6A52B1C954D35D13 /* APIClient.swift in Sources */,
+				692FB08F2FEF2EE3B70D7CD4 /* AppConfig.swift in Sources */,
+				6A967A4E9966D1DA42C7F394 /* AuthViewModel.swift in Sources */,
+				6C2F7E3BF61DE6BE88409505 /* BotikinApp.swift in Sources */,
+				E74032B2D8E10EFB4284BE99 /* BotiquinView.swift in Sources */,
+				BAE2E08D8E5F3997D13CBD67 /* BotiquinViewModel.swift in Sources */,
+				2D9D9CBBDBBF7898A5F3CFA6 /* CameraPicker.swift in Sources */,
+				EA82B9463D9FDE3917E37C35 /* Components.swift in Sources */,
+				4C3085E7AE8C3883532B2298 /* HistorialView.swift in Sources */,
+				D1ADF9968DD967F54CF5C0D7 /* HistorialViewModel.swift in Sources */,
+				B92D8FD89E9EFC265818CA19 /* KeychainStore.swift in Sources */,
+				8CB55D535764F7B39C4BEFBF /* LoginView.swift in Sources */,
+				829F87159655E2653627BD10 /* MainTabView.swift in Sources */,
+				85DE6CFD5963294F640038F3 /* MedicineFormView.swift in Sources */,
+				11B7EFC0069566A1FF26EEC9 /* NotificationsManager.swift in Sources */,
+				99B4C66AD9301D041C6BD933 /* PerfilView.swift in Sources */,
+				CFF6EF85A6B32E69EDF89EDF /* RecetaView.swift in Sources */,
+				E543CFEC46D472AC966332D6 /* RecetaViewModel.swift in Sources */,
+				9A0988416448417C91B8B007 /* SessionStore.swift in Sources */,
+				FBA0D453CD50288573CD230E /* SuscripcionView.swift in Sources */,
+				BEAD0A50B83D2ED3E49D8903 /* SuscripcionViewModel.swift in Sources */,
+				07E2F40CB846F402E5DB66ED /* Theme.swift in Sources */,
+				5329CE30F6CB20493D9BEEED /* TokensView.swift in Sources */,
+				4357BF2C5723FF18A2368CD0 /* TokensViewModel.swift in Sources */,
+				43D8A8AAFBF67667918CB72D /* WhatsAppView.swift in Sources */,
+				C9457CB8A4929E20EAB3B00C /* WhatsAppViewModel.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		1B7CD8CCA17BAAE560A17D90 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_FILE = Botikin/Resources/Info.plist;
+				INFOPLIST_KEY_UIUserInterfaceStyle = Light;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = app.botikin.ios;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		39D8F83C31851E9DB01CE5A8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 6.0;
+			};
+			name = Debug;
+		};
+		C4CC45D92B14BEA9BF9E80FA /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = "";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 6.0;
+			};
+			name = Release;
+		};
+		D26692BD0AD0303B46849F65 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_FILE = Botikin/Resources/Info.plist;
+				INFOPLIST_KEY_UIUserInterfaceStyle = Light;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = app.botikin.ios;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		9D7FC6EB46F31B1F56C9B153 /* Build configuration list for PBXNativeTarget "Botikin" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1B7CD8CCA17BAAE560A17D90 /* Debug */,
+				D26692BD0AD0303B46849F65 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		ABAB201729259FA18C399CDD /* Build configuration list for PBXProject "Botikin" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				39D8F83C31851E9DB01CE5A8 /* Debug */,
+				C4CC45D92B14BEA9BF9E80FA /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		88F8CE3028E147159D5D0436 /* XCLocalSwiftPackageReference "BotikinKit" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = BotikinKit;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		3E17A82EF04E39534087D583 /* BotikinKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = BotikinKit;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 733D538FA30AE497D3C8808E /* Project object */;
+}

@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="es-CL">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Botikin — El botiquín de tu casa, por WhatsApp</title>
+<meta name="description" content="Botikin es un agente de WhatsApp que administra el botiquín de tu casa: registra los remedios con una foto, te avisa antes de que venzan y te recuerda cada toma. Sin app que descargar.">
+<meta property="og:title" content="Botikin — El botiquín de tu casa, por WhatsApp">
+<meta property="og:description" content="Manda una foto de la caja. Botikin la registra, te avisa antes de que venza y te recuerda cada toma. Todo por WhatsApp.">
+<meta property="og:locale" content="es_CL">
+<link rel="icon" href="img/logo.png">
+<style>
+  :root {
+    --crema:      #FBF3E7;
+    --crema-alt:  #F5EADA;
+    --vino:       #4A0E12;
+    --vino-suave: #6B1A1F;
+    --rojo:       #C1121F;
+    --tinta:      #2B1114;
+    --gris:       #6B5A54;
+    --verde-wa:   #0E5C4B;
+    --chat-fondo: #E5DCD0;
+    --burbuja-yo: #DCF8C6;
+    --borde:      rgba(74,14,18,.14);
+    --radio:      22px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+  body {
+    font-family: "Poppins", "Montserrat", -apple-system, BlinkMacSystemFont,
+                 "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--vino);
+    color: var(--tinta);
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  img { max-width: 100%; display: block; }
+  a { color: inherit; text-decoration: none; }
+
+  .marco { background: var(--vino); padding: clamp(10px, 2vw, 26px); }
+  .lienzo {
+    background: var(--crema);
+    border-radius: clamp(18px, 3vw, 34px);
+    overflow: hidden;
+  }
+  .contenedor { max-width: 1060px; margin: 0 auto; padding: 0 clamp(20px, 5vw, 52px); }
+
+  h1, h2, h3 { line-height: 1.08; letter-spacing: -.025em; font-weight: 800; }
+  .kicker {
+    font-size: .72rem; font-weight: 700; letter-spacing: .16em;
+    text-transform: uppercase; color: var(--rojo); margin-bottom: 14px;
+  }
+  .bajada { color: var(--gris); font-size: 1.02rem; max-width: 44ch; }
+
+  /* ── Nav ── */
+  nav { position: sticky; top: 0; z-index: 60; background: rgba(251,243,231,.92);
+        backdrop-filter: blur(12px); border-bottom: 1px solid var(--borde); }
+  .nav-in { display: flex; align-items: center; justify-content: space-between;
+            gap: 16px; padding: 14px 0; }
+  .marca { display: flex; align-items: center; gap: 11px; font-weight: 800; font-size: 1.1rem; }
+  .marca img { width: 34px; height: 34px; border-radius: 9px; }
+  .nav-links { display: flex; gap: 24px; font-size: .88rem; color: var(--gris); font-weight: 500; }
+  .nav-links a:hover { color: var(--rojo); }
+  @media (max-width: 860px) { .nav-links { display: none; } }
+
+  .btn {
+    display: inline-block; background: var(--rojo); color: #fff;
+    padding: 13px 26px; border-radius: 999px; font-weight: 700; font-size: .93rem;
+    border: 2px solid var(--rojo); transition: transform .15s, background .15s;
+    white-space: nowrap;
+  }
+  .btn:hover { transform: translateY(-2px); background: var(--vino); border-color: var(--vino); }
+  .btn.fantasma { background: transparent; color: var(--vino); border-color: var(--vino); }
+  .btn.fantasma:hover { background: var(--vino); color: var(--crema); }
+
+  section { padding: clamp(56px, 8vw, 96px) 0; }
+  .linea { border-top: 1px solid var(--borde); }
+
+  /* ── Hero ── */
+  .hero-grid { display: grid; grid-template-columns: 1.15fr .85fr; gap: clamp(28px, 5vw, 56px); align-items: center; }
+  .hero h1 { font-size: clamp(2.3rem, 6.2vw, 4.1rem); }
+  .hero .bajada { margin: 22px 0 30px; font-size: 1.08rem; max-width: 46ch; }
+  .acciones { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .nota-invitacion { font-size: .84rem; color: var(--gris); margin-top: 16px; }
+  @media (max-width: 900px) { .hero-grid { grid-template-columns: 1fr; } }
+
+  /* ── Maqueta de chat ── */
+  .chat {
+    border-radius: 20px; overflow: hidden; background: var(--chat-fondo);
+    box-shadow: 0 24px 60px rgba(74,14,18,.22); max-width: 380px; width: 100%;
+    margin: 0 auto; border: 1px solid rgba(0,0,0,.06);
+  }
+  .chat-top { background: var(--verde-wa); color: #fff; padding: 13px 16px;
+              display: flex; align-items: center; gap: 11px; }
+  .chat-top .av { width: 38px; height: 38px; border-radius: 50%; background: var(--rojo);
+                  display: grid; place-items: center; font-size: 1.1rem; flex: none; }
+  .chat-top b { font-size: .98rem; font-weight: 700; display: block; }
+  .chat-top span { font-size: .74rem; opacity: .8; }
+  .chat-cuerpo { padding: 16px 14px; display: flex; flex-direction: column; gap: 10px; }
+  .msg { max-width: 88%; padding: 11px 14px; border-radius: 14px; font-size: .88rem;
+         line-height: 1.5; background: #fff; color: var(--tinta);
+         box-shadow: 0 1px 2px rgba(0,0,0,.09); }
+  .msg.yo { background: var(--burbuja-yo); align-self: flex-end; }
+  .msg .jpg { display: flex; align-items: center; gap: 9px; font-weight: 700; font-size: .8rem; }
+  .msg .jpg i { font-style: normal; background: #fff; color: var(--rojo); font-size: .62rem;
+                font-weight: 800; padding: 5px 6px; border-radius: 5px; letter-spacing: .04em; }
+
+  /* ── Cifras ── */
+  .cifras { display: grid; gap: 26px; }
+  .cifra { display: grid; grid-template-columns: minmax(150px, 210px) 1fr; gap: clamp(16px, 4vw, 40px);
+           align-items: baseline; padding-bottom: 22px; border-bottom: 1px solid var(--borde); }
+  .cifra b { font-size: clamp(2.2rem, 5.4vw, 3.3rem); color: var(--rojo); font-weight: 800;
+             letter-spacing: -.03em; line-height: 1; }
+  .cifra p { color: var(--gris); font-size: .98rem; }
+  @media (max-width: 640px) { .cifra { grid-template-columns: 1fr; gap: 8px; } }
+  .remate { margin-top: 30px; font-size: 1.12rem; font-weight: 700; max-width: 52ch; }
+
+  /* ── Caminos ── */
+  .caminos { display: grid; gap: 30px; margin-top: 12px; }
+  .camino { padding-top: 26px; border-top: 2px solid var(--vino); }
+  .camino .cuando { font-size: .7rem; font-weight: 700; letter-spacing: .14em;
+                    text-transform: uppercase; color: var(--rojo); }
+  .camino h3 { font-size: clamp(1.25rem, 2.6vw, 1.6rem); margin: 8px 0 10px; }
+  .camino p { color: var(--gris); max-width: 62ch; }
+
+  /* ── Fuentes de datos ── */
+  .fuentes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+  .fuente { background: var(--crema-alt); border-radius: 16px; padding: 24px; }
+  .fuente .etq { display: inline-block; background: rgba(193,18,31,.1); color: var(--rojo);
+                 font-size: .68rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase;
+                 padding: 5px 10px; border-radius: 6px; margin-bottom: 12px; }
+  .fuente h3 { font-size: 1.02rem; margin-bottom: 8px; }
+  .fuente p { font-size: .9rem; color: var(--gris); }
+  @media (max-width: 780px) { .fuentes { grid-template-columns: 1fr; } }
+
+  /* ── Dos columnas ── */
+  .dos { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(26px, 5vw, 54px); align-items: center; }
+  @media (max-width: 900px) { .dos { grid-template-columns: 1fr; } }
+
+  /* ── Plan ── */
+  .plan-envoltura { background: var(--vino); color: var(--crema); border-radius: 26px;
+                    padding: clamp(30px, 5vw, 52px); }
+  .plan-envoltura .kicker { color: #E8A0A6; }
+  .plan-grid { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(24px, 4vw, 48px); align-items: center; }
+  .precio { font-size: clamp(2.6rem, 7vw, 4rem); font-weight: 800; letter-spacing: -.03em; line-height: 1; }
+  .precio small { font-size: .9rem; font-weight: 600; opacity: .7; letter-spacing: 0; }
+  .plan-envoltura h2 { font-size: clamp(1.7rem, 3.6vw, 2.4rem); margin-bottom: 14px; }
+  .plan-envoltura ul { list-style: none; display: grid; gap: 11px; margin: 22px 0 26px; }
+  .plan-envoltura li { padding-left: 26px; position: relative; font-size: .95rem; opacity: .93; }
+  .plan-envoltura li::before { content: "✓"; position: absolute; left: 0; color: #7FD1A8; font-weight: 800; }
+  .plan-envoltura .fino { font-size: .82rem; opacity: .62; margin-top: 18px; line-height: 1.6; }
+  @media (max-width: 820px) { .plan-grid { grid-template-columns: 1fr; } }
+
+  /* ── Aviso médico ── */
+  .aviso { background: var(--crema-alt); border-left: 4px solid var(--rojo);
+           border-radius: 0 14px 14px 0; padding: 26px 28px; }
+  .aviso h3 { font-size: 1.05rem; margin-bottom: 10px; }
+  .aviso p { font-size: .93rem; color: var(--gris); max-width: 70ch; }
+  .aviso p + p { margin-top: 10px; }
+
+  /* ── Footer ── */
+  footer { background: var(--vino); color: rgba(251,243,231,.72); padding: 46px 0 42px;
+           font-size: .86rem; text-align: center; }
+  footer .marca { color: var(--crema); margin-bottom: 12px; justify-content: center; }
+</style>
+</head>
+<body>
+<div class="marco">
+<div class="lienzo">
+
+<nav>
+  <div class="contenedor nav-in">
+    <a class="marca" href="#"><img src="img/logo.png" alt="">Botikin</a>
+    <div class="nav-links">
+      <a href="#problema">El problema</a>
+      <a href="#como">Cómo funciona</a>
+      <a href="#datos">De dónde salen los datos</a>
+      <a href="#plan">Plan</a>
+    </div>
+    <a class="btn" href="#plan">Quiero mi invitación</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="contenedor hero-grid">
+    <div>
+      <p class="kicker">Santiago de Chile · 2026</p>
+      <h1>El botiquín de tu casa es una bodega sin inventario.</h1>
+      <p class="bajada">
+        Los remedios se vencen sin que nadie lo note, se compra de nuevo lo que
+        ya estaba en el cajón, y los tratamientos se abandonan a la mitad.
+        Botikin es un agente de WhatsApp que lleva la cuenta por ti.
+      </p>
+      <div class="acciones">
+        <a class="btn" href="#plan">Quiero mi invitación</a>
+        <a class="btn fantasma" href="#como">Ver cómo funciona</a>
+      </div>
+      <p class="nota-invitacion">Se entra solo por invitación de alguien que ya lo usa.</p>
+    </div>
+
+    <div class="chat">
+      <div class="chat-top">
+        <div class="av">✚</div>
+        <div><b>Botikin</b><span>en línea</span></div>
+      </div>
+      <div class="chat-cuerpo">
+        <div class="msg yo"><div class="jpg"><i>JPG</i> CAJA_LOSARTAN.JPG</div></div>
+        <div class="msg">Registré Losartán 50 mg × 30 comprimidos. Vence 03/2027: te aviso un mes antes.</div>
+        <div class="msg">Ojo: ya tenías 12 comprimidos vigentes del mismo losartán. Con esta caja te alcanza hasta el 12 de septiembre — no compres más.</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section id="problema" class="linea">
+  <div class="contenedor">
+    <p class="kicker">El problema</p>
+    <div class="cifras">
+      <div class="cifra">
+        <b>73 %</b>
+        <p>de los chilenos bota a la basura los remedios que se le vencieron sin usar. Solo un 15 % los gestiona bien.</p>
+      </div>
+      <div class="cifra">
+        <b>$1.800 MM</b>
+        <p>al año pierde Chile en medicamentos vencidos y sobrantes que se compraron y nunca se usaron.</p>
+      </div>
+      <div class="cifra">
+        <b>50 %</b>
+        <p>de los pacientes crónicos no cumple su tratamiento según la OMS — y en países en desarrollo la cifra es peor.</p>
+      </div>
+    </div>
+    <p class="remate">
+      Los tres son el mismo problema: nadie sabe qué hay en el cajón, hasta
+      cuándo sirve, ni si el tratamiento se está tomando de verdad.
+    </p>
+  </div>
+</section>
+
+<section id="como" class="linea">
+  <div class="contenedor">
+    <p class="kicker">La solución</p>
+    <div class="dos">
+      <div>
+        <h2 style="font-size: clamp(1.9rem, 4.4vw, 2.9rem); margin-bottom: 18px;">
+          No es una app.<br>Es el chat que ya tienes abierto.
+        </h2>
+        <p class="bajada">
+          Manda una foto de la caja o de la boleta: Botikin la registra con su
+          vencimiento, te avisa antes de que caduque, te recuerda cada toma y
+          te dice si ya tienes ese principio activo antes de que compres de
+          nuevo. Sin descargar nada, sin menús, sin contraseñas.
+        </p>
+        <p class="nota-invitacion" style="margin-top:18px;">
+          Más del 90 % de penetración de WhatsApp entre internautas en Chile.
+        </p>
+      </div>
+      <div class="chat">
+        <div class="chat-top">
+          <div class="av">✚</div>
+          <div><b>Botikin</b><span>en línea</span></div>
+        </div>
+        <div class="chat-cuerpo">
+          <div class="msg yo">voy a la farmacia, ¿compro Kitadol para el stock?</div>
+          <div class="msg">No compres: ya tienes Panadol 500 mg (16 comprimidos, vence 11/2026). Es el mismo paracetamol en la misma dosis. Lo que sí se te está acabando es el ibuprofeno: quedan 4.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="linea">
+  <div class="contenedor">
+    <p class="kicker">Qué hace</p>
+    <h2 style="font-size: clamp(1.8rem, 4.2vw, 2.7rem); margin-bottom: 34px;">
+      Tres caminos, uno por cada plata perdida
+    </h2>
+    <div class="caminos">
+      <div class="camino">
+        <p class="cuando">Si compras un remedio</p>
+        <h3>Foto y queda en inventario</h3>
+        <p>Lee nombre comercial, principio activo, concentración y vencimiento desde la caja. El duplicado se detecta por principio activo + concentración, no por marca.</p>
+      </div>
+      <div class="camino">
+        <p class="cuando">Si algo va a vencer</p>
+        <h3>Aviso antes, no después</h3>
+        <p>Alerta 30 días antes del vencimiento con qué hacer: usarlo, priorizarlo en el tratamiento o desecharlo bien — en punto limpio, nunca al WC ni a la basura.</p>
+      </div>
+      <div class="camino">
+        <p class="cuando">Si tienes un tratamiento</p>
+        <h3>Adherencia que se confirma, no se supone</h3>
+        <p>Recordatorio por cada toma según la pauta que prescribió el médico. La adherencia se mide con la confirmación del paciente, y la semana se resume para la familia o el doctor.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="datos" class="linea">
+  <div class="contenedor">
+    <p class="kicker">De dónde salen los datos</p>
+    <h2 style="font-size: clamp(1.8rem, 4.2vw, 2.7rem); margin-bottom: 34px;">
+      Tres fuentes, ninguna es la memoria de nadie.
+    </h2>
+    <div class="fuentes">
+      <div class="fuente">
+        <span class="etq">Registro ISP</span>
+        <h3>Registro sanitario público</h3>
+        <p>Principios activos, concentraciones y equivalencias entre marcas. Es el diccionario contra el que se deduplica.</p>
+      </div>
+      <div class="fuente">
+        <span class="etq">El envase</span>
+        <h3>Lectura de caja y boleta</h3>
+        <p>Fecha de vencimiento, lote y formato salen impresos del envase, no de una estimación del modelo.</p>
+      </div>
+      <div class="fuente">
+        <span class="etq">La receta</span>
+        <h3>Pauta prescrita por el médico</h3>
+        <p>Dosis, frecuencia y duración las define la receta que sube el usuario. Botikin las recuerda, no las indica.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="linea">
+  <div class="contenedor dos">
+    <div>
+      <p class="kicker">La decisión que define el producto</p>
+      <h2 style="font-size: clamp(1.7rem, 3.8vw, 2.5rem); margin-bottom: 16px;">
+        Duplicado no es el mismo nombre. Es el mismo principio activo.
+      </h2>
+      <p class="bajada">
+        Tapsin, Kitadol y Panadol son tres compras distintas del mismo
+        paracetamol. La deduplicación corre sobre principio activo +
+        concentración + forma farmacéutica, usando el registro del ISP como
+        diccionario — el modelo no adivina equivalencias.
+      </p>
+      <p class="bajada" style="margin-top:14px;">
+        Y la regla corta en ambos sentidos: paracetamol 500 mg comprimido no es
+        lo mismo que el jarabe pediátrico de 100 mg/mL. Marcar ese par como
+        duplicado sería un error peligroso.
+      </p>
+    </div>
+    <div class="chat">
+      <div class="chat-top">
+        <div class="av">✚</div>
+        <div><b>Botikin</b><span>en línea</span></div>
+      </div>
+      <div class="chat-cuerpo">
+        <div class="msg yo">llegó la receta de Bruno, te la mando</div>
+        <div class="msg"><div class="jpg"><i>PDF</i> RECETA_15MAY.PDF</div></div>
+        <div class="msg">Receta del 15 de mayo, Dra. Fernández, para Bruno. Son 6 tratamientos: 2 de permanencia y 4 que terminan el 20 de mayo. Te voy a recordar las tomas de cada uno. ¿Empezamos hoy?</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="plan" class="linea">
+  <div class="contenedor">
+    <div class="plan-envoltura">
+      <div class="plan-grid">
+        <div>
+          <p class="kicker">Plan único</p>
+          <h2>Un plan, por invitación, y se paga.</h2>
+          <div class="precio" style="margin: 18px 0 6px;">$3.990 <small>CLP / mes</small></div>
+          <p style="opacity:.72; font-size:.92rem;">Toda la casa incluida. Se renueva solo. Cancelas con un mensaje.</p>
+          <div style="margin-top: 28px;">
+            <a class="btn" href="#" style="background:#fff; color:var(--vino); border-color:#fff;">Quiero mi invitación</a>
+          </div>
+        </div>
+        <div>
+          <ul>
+            <li>Inventario completo del botiquín de la casa</li>
+            <li>Registro por foto de la caja, por descripción o por código</li>
+            <li>Detección de duplicados por principio activo</li>
+            <li>Aviso de vencimiento 30 días antes, con qué hacer</li>
+            <li>Lectura de recetas médicas, incluidas las de varias páginas</li>
+            <li>Recordatorio de cada toma y resumen semanal de adherencia</li>
+            <li>Todos los integrantes de la casa, con sus edades</li>
+          </ul>
+          <p class="fino">
+            No hay plan gratis ni versión de prueba. Se entra por el link de
+            alguien que ya lo usa. Pago mensual con tarjeta de crédito vía
+            Flow; los datos de la tarjeta los guarda la pasarela, no nosotros.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="linea">
+  <div class="contenedor">
+    <div class="aviso">
+      <h3>Botikin no da asesoría médica</h3>
+      <p>
+        No indica ni ajusta dosis, no recomienda medicamentos y no reemplaza al
+        médico ni al químico farmacéutico. Los recordatorios siguen la pauta
+        que prescribió tu médico y los avisos de vencimiento usan la fecha
+        impresa en el envase.
+      </p>
+      <p>
+        Ante cualquier duda de salud, consulta en un centro asistencial. En una
+        emergencia llama al <strong>SAMU 131</strong>; ante una intoxicación,
+        al <strong>CITUC 2 2635 3800</strong>.
+      </p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="contenedor">
+    <div class="marca"><img src="img/logo.png" alt="" style="width:28px;height:28px;border-radius:7px;">Botikin</div>
+    <p>Hecho con ❤️ en Chile</p>
+  </div>
+</footer>
+
+</div>
+</div>
+</body>
+</html>

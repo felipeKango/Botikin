@@ -1,0 +1,38 @@
+# ── Datos personales — NUNCA al repositorio ──────────────────
+# Receta real con nombre, RUN, domicilio y teléfono de un menor.
+# Si se necesita una receta de ejemplo, usar una anonimizada.
+Receta Tipo.pdf
+recetas-reales/
+*.receta.pdf
+
+# La captura de la pantalla "Receta" lleva la receta real incrustada
+# y legible (nombre, RUN, domicilio, teléfono de un menor).
+MVP/assets/screenshots/receta.png
+MVP/_legacy/landing-img-app/receta.png
+
+# ── Credenciales ─────────────────────────────────────────────
+.env
+.env.*
+!.env.example
+**/Secrets.plist
+**/Secrets.xcconfig
+supabase/.env
+
+# ── Artefactos de compilación ────────────────────────────────
+**/.build/
+DerivedData/
+xcuserdata/
+*.xcuserstate
+*.hmap
+*.ipa
+node_modules/
+.vercel/
+
+# ── Supabase local ───────────────────────────────────────────
+supabase/.branches/
+supabase/.temp/
+
+# ── Basura del sistema ───────────────────────────────────────
+.DS_Store
+~$*
+*.tmp
