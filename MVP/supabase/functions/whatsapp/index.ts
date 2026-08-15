@@ -63,6 +63,30 @@ async function enviar(telefono: string, texto: string) {
   if (!r.ok) console.error("envío falló:", r.status, await r.text());
 }
 
+/** Un código es 6 caracteres del alfabeto sin ambigüedades. Aceptamos que
+ *  la persona lo escriba con espacios, guiones o en minúscula. */
+function extraerCodigo(texto: string): string | null {
+  const limpio = texto.toUpperCase().replace(/[^A-Z0-9]/g, "");
+  return /^[234789ABCDEFGHJKMNPQRTUVWXYZ]{6}$/.test(limpio) ? limpio : null;
+}
+
+/** Cada fallo se explica en su idioma y dice qué hacer. */
+const EXPLICACION: Record<string, string> = {
+  no_existe:
+    "Ese código no me calza. Revisa que esté completo — son 6 caracteres — o " +
+    "búscalo de nuevo en el correo que te llegó al pagar.",
+  ya_usada:
+    "Ese código ya se usó. Si fuiste tú desde otro teléfono, escríbeme desde " +
+    "ese número; si crees que hay un error, respóndeme y lo vemos.",
+  expirada:
+    "Ese código venció. Escríbeme y te genero uno nuevo.",
+  bloqueado:
+    "Van varios intentos fallidos, así que voy a esperar un rato antes de " +
+    "seguir probando. Vuelve a escribirme en una hora con el código del correo.",
+  ya_tiene_hogar:
+    "Este número ya está activo, no necesitas código. Cuéntame qué necesitas.",
+};
+
 Deno.serve(async (req) => {
   if (req.method !== "POST") return new Response("ok", { status: 200 });
 
@@ -91,13 +115,47 @@ Deno.serve(async (req) => {
     const { data: visto } = await db.from("mensajes").select("id").eq("wamid", m.id).maybeSingle();
     if (visto) return new Response("duplicado", { status: 200 });
 
-    // El teléfono ES la identidad. Sin hogar no hay conversación.
-    const { data: hogar } = await db.from("hogares").select("id").eq("telefono", telefono).maybeSingle();
+    // El teléfono ES la identidad. Sin hogar, hay dos caminos: canjear un
+    // código de activación, o ir a pagar.
+    let { data: hogar } = await db.from("hogares").select("id").eq("telefono", telefono).maybeSingle();
+
     if (!hogar) {
+      const texto = m.text?.body ?? "";
+      const posible = extraerCodigo(texto);
+
+      if (posible) {
+        // El canje es determinista y toca dinero: NO pasa por el modelo.
+        const { data: r } = await db.rpc("canjear_activacion", {
+          p_codigo: posible,
+          p_telefono: telefono,
+        });
+        const fila = Array.isArray(r) ? r[0] : r;
+
+        if (fila?.resultado === "ok") {
+          hogar = { id: fila.hogar };
+          await enviar(
+            telefono,
+            "Listo, quedaste activo 🎉 Soy el Doctor Botikin y me encargo del " +
+            "botiquín de tu casa.\n\nPara partir, ¿quiénes viven contigo?",
+          );
+          await db.from("mensajes").insert({
+            hogar_id: hogar.id, direccion: "entrante", tipo: "texto",
+            texto, wamid: m.id,
+          });
+          return new Response("activado", { status: 200 });
+        }
+
+        await enviar(telefono, EXPLICACION[fila?.resultado ?? "no_existe"]);
+        return new Response("canje fallido", { status: 200 });
+      }
+
       await enviar(
         telefono,
-        "Hola. Botikin funciona por invitación: necesitas el link de alguien que " +
-        "ya lo use. Si tienes uno, ábrelo y nos vemos por acá.",
+        "Hola 👋 Soy el Doctor Botikin, el que lleva la cuenta del botiquín de " +
+        "tu casa.\n\nPara empezar necesitas activar tu cuenta acá:\n" +
+        (Deno.env.get("FLOW_LINK_SUSCRIPCION") ?? "https://botikin.app") +
+        "\n\nCuando pagues te llega un código de 6 caracteres al correo. " +
+        "Me lo escribes por acá y quedamos andando.",
       );
       return new Response("sin hogar", { status: 200 });
     }

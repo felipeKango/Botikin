@@ -2,9 +2,9 @@
 
 **Estado:** Borrador · **Dueño:** F. Rubilar · **Creado:** 15-08-2026
 **Padre:** [Botikin](00-botikin.md)
-**Alcance:** el link de recomendación, el pago mensual con tarjeta vía Flow y
-el estado de la cuenta — NO hay plan gratis, NO hay prueba sin pago, NO hay
-compra dentro del chat
+**Alcance:** el link de recomendación, el pago mensual con tarjeta vía Flow,
+el código de activación por correo y el estado de la cuenta — NO hay plan
+gratis, NO hay prueba sin pago, NO hay compra dentro del chat
 
 ---
 
@@ -43,7 +43,8 @@ Botikin. Vamos a armar el botiquín de tu casa —¿quiénes viven contigo?"*
 - **O4** — quien invita sabe cuántos entraron por su link
 - **O5** — si el cobro falla, el agente lo dice por WhatsApp y da el link
   para arreglarlo, sin cortar de golpe
-- **O6** — la cuenta queda amarrada al número de WhatsApp que se registró
+- **O6** — la cuenta queda amarrada al número de WhatsApp **demostrado**, no
+  al que alguien escribió en un formulario
 
 - **NO1** — no hay plan gratis ni versión de prueba
 - **NO2** — no hay descarga, no hay contraseña, no hay app
@@ -59,11 +60,12 @@ HOY                        DESPUÉS
 
 buscar en la App Store     alguien te pasa su link
   └─ descargar               └─ página de una pantalla
-       └─ crear cuenta            └─ ingresas número + tarjeta
+       └─ crear cuenta            └─ ingresas CORREO + tarjeta
             └─ plan gratis             └─ Flow cobra el primer mes
-                 └─ paywall                 └─ suscripción activa
-                      └─ abandono                └─ el agente escribe primero
-                                                      └─ empieza a conocer la casa
+                 └─ paywall                 └─ te llega un código al correo
+                      └─ abandono                 └─ se lo escribes al agente
+                                                       └─ nace tu hogar
+                                                            └─ empieza a conocer la casa
 
                            CADA MES
                              Flow cobra solo
@@ -75,6 +77,28 @@ buscar en la App Store     alguien te pasa su link
 
 **El plan (único):** **$3.990 CLP/mes**, todo incluido, por invitación.
 
+### Por qué el código, y no el teléfono en el formulario
+
+El diseño anterior creaba el hogar con el número que la persona escribía al
+pagar. Ese supuesto se rompió en la primera prueba real: el teléfono que
+teníamos anotado no era el WhatsApp desde el que efectivamente se escribe.
+Un hogar montado sobre un número equivocado es un hogar al que su dueño no
+puede entrar, y no hay forma de que el agente se dé cuenta.
+
+**El código invierte la prueba.** Llega al correo de quien pagó y solo sirve
+escribiéndolo *por WhatsApp*. El número deja de ser un dato declarado y pasa
+a ser un hecho: quedó demostrado por el acto de escribir desde él.
+
+De paso, el formulario de pago se simplifica — ya no pide teléfono, solo
+correo y tarjeta.
+
+**Seis caracteres, alfabeto sin ambigüedades.** Se dictan por teléfono y se
+escriben a mano, así que fuera `0`/`O`, `1`/`I`/`L` y `5`/`S`. Se acepta en
+minúscula, con espacios o con guiones: `bpk-tqx` es `BPKTQX`.
+
+**El candado:** cinco intentos fallidos por hora y por teléfono. Sin eso, seis
+caracteres son adivinables a fuerza bruta desde WhatsApp.
+
 **En pausa** significa: el agente responde, pero solo para decir que la cuenta
 está suspendida y cómo reactivarla. **Los datos no se borran y los avisos
 proactivos se detienen.**
@@ -82,6 +106,16 @@ proactivos se detienen.**
 ---
 
 ## 5 · LOS DATOS
+
+**activación** — el puente entre el pago y el WhatsApp
+| campo | qué es |
+|---|---|
+| código | 6 caracteres, único, del alfabeto sin ambigüedades |
+| correo | a quién se le mandó |
+| identificadores de Flow | el cobro que lo originó |
+| estado | `pendiente` \| `usada` \| `expirada` |
+| expira | 30 días |
+| hogar | se llena al canjearse |
 
 **invitación**
 | campo | qué es |
@@ -134,12 +168,7 @@ CUANDO alguien abre un link de invitación
   ENTONCES mostramos la página de suscripción con el precio del plan.
 
 
-CUANDO envía número y tarjeta
-
-  ¿el número ya tiene hogar?
-     → sí y está activo : le decimos que su cuenta ya existe
-     → sí y está en pausa: reactivamos esa, no creamos otra
-     → no                : creamos el hogar
+CUANDO envía correo y tarjeta
 
   le pedimos el cobro a Flow
 
@@ -153,12 +182,29 @@ CUANDO la pasarela confirma un cobro
   ¿ya procesamos ese cobro?        → si sí, no hacemos nada
 
   ¿el cobro salió bien?
-     → sí: suscripción activa, consumimos un uso de la invitación,
-           corremos el próximo cobro un mes, y
-           EL AGENTE ESCRIBE PRIMERO para empezar a conocer la casa
+     → sí: generamos un código de activación
+           y se lo mandamos al correo con que pagó
      → no: sumamos un intento fallido
               ├─ 1 y 2: el agente avisa y Flow reintenta
               └─ 3    : cuenta en pausa, se detienen los avisos
+
+
+CUANDO un número desconocido le escribe al agente
+
+  ¿el mensaje es un código de 6 caracteres del alfabeto?
+     → no: lo saludamos y le damos el link de pago. Nada más:
+           sin cuenta no hay conversación.
+     → sí: intentamos canjearlo
+
+  el canje es atómico y NO pasa por el modelo — toca dinero:
+     ¿lleva 5 fallos en la última hora?  → esperamos una hora
+     ¿este número ya es un hogar?        → no necesita código
+     ¿el código existe?                  → si no, sumamos un fallo
+     ¿ya se usó? ¿venció?                → se lo explicamos y qué hacer
+
+  ENTONCES nace el hogar con ESTE teléfono, la suscripción queda activa,
+           se consume el uso de la invitación, y el agente saluda y
+           pregunta quiénes viven en la casa.
 
 
 CUANDO el usuario pide cancelar
@@ -172,7 +218,9 @@ CUANDO el usuario pide cancelar
 
 **Promesas:**
 - nadie entra sin invitación y sin pagar
-- una cuenta = un número de WhatsApp
+- una cuenta = un número de WhatsApp **demostrado**
+- un código se canjea una sola vez, desde un solo teléfono
+- cada rechazo dice por qué y qué hacer, nunca "código inválido" a secas
 - el mismo cobro nunca se procesa dos veces
 - cancelar toma un mensaje, no una llamada
 - si la cuenta se pausa, los datos de la familia se quedan donde están
