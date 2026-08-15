@@ -63,23 +63,25 @@ async function enviar(telefono: string, texto: string) {
   if (!r.ok) console.error("envío falló:", r.status, await r.text());
 }
 
-/** Un código es 6 caracteres del alfabeto sin ambigüedades. Aceptamos que
- *  la persona lo escriba con espacios, guiones o en minúscula. */
+/** Un código es ABCD-EFGH: 8 caracteres de un alfabeto sin I, O, 0 ni 1.
+ *  Se acepta como venga — minúsculas, con o sin guión, con espacios. */
 function extraerCodigo(texto: string): string | null {
   const limpio = texto.toUpperCase().replace(/[^A-Z0-9]/g, "");
-  return /^[234789ABCDEFGHJKMNPQRTUVWXYZ]{6}$/.test(limpio) ? limpio : null;
+  return /^[ABCDEFGHJKLMNPQRSTUVWXYZ23456789]{8}$/.test(limpio) ? limpio : null;
 }
 
 /** Cada fallo se explica en su idioma y dice qué hacer. */
 const EXPLICACION: Record<string, string> = {
   no_existe:
-    "Ese código no me calza. Revisa que esté completo — son 6 caracteres — o " +
-    "búscalo de nuevo en el correo que te llegó al pagar.",
+    "Ese código no me calza. Revisa que esté completo — son 8 caracteres, " +
+    "tipo ABCD-EFGH — o búscalo de nuevo en el correo que te llegó al pagar.",
   ya_usada:
     "Ese código ya se usó. Si fuiste tú desde otro teléfono, escríbeme desde " +
     "ese número; si crees que hay un error, respóndeme y lo vemos.",
   expirada:
     "Ese código venció. Escríbeme y te genero uno nuevo.",
+  revocada:
+    "Ese código fue anulado. Si crees que hay un error, respóndeme y lo vemos.",
   bloqueado:
     "Van varios intentos fallidos, así que voy a esperar un rato antes de " +
     "seguir probando. Vuelve a escribirme en una hora con el código del correo.",
@@ -125,7 +127,7 @@ Deno.serve(async (req) => {
 
       if (posible) {
         // El canje es determinista y toca dinero: NO pasa por el modelo.
-        const { data: r } = await db.rpc("canjear_activacion", {
+        const { data: r } = await db.rpc("canjear_codigo", {
           p_codigo: posible,
           p_telefono: telefono,
         });
@@ -133,15 +135,16 @@ Deno.serve(async (req) => {
 
         if (fila?.resultado === "ok") {
           hogar = { id: fila.hogar };
-          await enviar(
-            telefono,
+          const bienvenida =
             "Listo, quedaste activo 🎉 Soy el Doctor Botikin y me encargo del " +
-            "botiquín de tu casa.\n\nPara partir, ¿quiénes viven contigo?",
-          );
-          await db.from("mensajes").insert({
-            hogar_id: hogar.id, direccion: "entrante", tipo: "texto",
-            texto, wamid: m.id,
-          });
+            "botiquín de tu casa.\n\nPara partir, ¿quiénes viven contigo?";
+          await enviar(telefono, bienvenida);
+          // El saludo también va al historial: el agente lo lee en el
+          // turno siguiente y sin él la conversación arranca coja.
+          await db.from("mensajes").insert([
+            { hogar_id: hogar.id, direccion: "entrante", tipo: "texto", texto, wamid: m.id },
+            { hogar_id: hogar.id, direccion: "saliente", tipo: "texto", texto: bienvenida },
+          ]);
           return new Response("activado", { status: 200 });
         }
 
@@ -154,7 +157,7 @@ Deno.serve(async (req) => {
         "Hola 👋 Soy el Doctor Botikin, el que lleva la cuenta del botiquín de " +
         "tu casa.\n\nPara empezar necesitas activar tu cuenta acá:\n" +
         (Deno.env.get("FLOW_LINK_SUSCRIPCION") ?? "https://botikin.app") +
-        "\n\nCuando pagues te llega un código de 6 caracteres al correo. " +
+        "\n\nCuando pagues te llega un código al correo, tipo ABCD-EFGH. " +
         "Me lo escribes por acá y quedamos andando.",
       );
       return new Response("sin hogar", { status: 200 });

@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="es-CL">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Botikin · orquestador</title>
+<link rel="icon" href="img/avatar.png">
+<style>
+  :root {
+    --fondo:#1A0709; --panel:#2B1114; --panel2:#3A1A1E;
+    --crema:#FBF3E7; --gris:#A08B84; --rojo:#C1121F;
+    --verde:#3FA96B; --ambar:#D99A2B; --borde:rgba(251,243,231,.1);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family:"Poppins",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    background:var(--fondo); color:var(--crema); line-height:1.5;
+    padding:clamp(16px,3vw,32px); min-height:100vh;
+  }
+  .marco { max-width:1180px; margin:0 auto; }
+  header { display:flex; align-items:baseline; justify-content:space-between;
+           gap:16px; flex-wrap:wrap; margin-bottom:24px; }
+  h1 { font-size:1.5rem; letter-spacing:-.02em; font-weight:800; display:flex; align-items:center; gap:10px; }
+  h1 img { width:30px; height:30px; border-radius:8px; }
+  .sello { font-size:.76rem; color:var(--gris); }
+  h2 { font-size:.72rem; letter-spacing:.14em; text-transform:uppercase;
+       color:var(--gris); font-weight:700; margin:30px 0 12px; }
+
+  .tarjeta { background:var(--panel); border:1px solid var(--borde); border-radius:14px; padding:18px; }
+
+  /* Circuito */
+  .circuito { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:10px; }
+  .paso { background:var(--panel); border:1px solid var(--borde); border-radius:12px;
+          padding:15px; position:relative; }
+  .paso .n { font-size:.66rem; color:var(--gris); letter-spacing:.08em; text-transform:uppercase; }
+  .paso .v { font-size:2rem; font-weight:800; letter-spacing:-.03em; line-height:1.1; margin-top:5px; }
+  .paso .u { font-size:.72rem; color:var(--gris); }
+  .paso.cae { border-color:rgba(217,154,43,.5); background:rgba(217,154,43,.08); }
+  .paso .aviso { font-size:.68rem; color:var(--ambar); margin-top:7px; line-height:1.4; }
+
+  /* Cifras */
+  .cifras { display:grid; grid-template-columns:repeat(auto-fit,minmax(128px,1fr)); gap:10px; }
+  .cifra { background:var(--panel); border:1px solid var(--borde); border-radius:12px; padding:14px; }
+  .cifra b { display:block; font-size:1.5rem; font-weight:800; letter-spacing:-.02em; }
+  .cifra span { font-size:.72rem; color:var(--gris); }
+
+  /* Servicios */
+  .servicios { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:10px; }
+  .srv { display:flex; gap:11px; align-items:flex-start; background:var(--panel);
+         border:1px solid var(--borde); border-radius:12px; padding:14px; }
+  .luz { width:9px; height:9px; border-radius:50%; margin-top:6px; flex:none; }
+  .luz.si { background:var(--verde); box-shadow:0 0 8px rgba(63,169,107,.6); }
+  .luz.no { background:var(--rojo); box-shadow:0 0 8px rgba(193,18,31,.6); }
+  .srv b { font-size:.86rem; display:block; }
+  .srv span { font-size:.72rem; color:var(--gris); }
+
+  /* Alertas */
+  .alerta { display:flex; gap:12px; align-items:flex-start; border-radius:12px;
+            padding:14px 16px; margin-bottom:8px; }
+  .alerta.alto  { background:rgba(193,18,31,.13); border:1px solid rgba(193,18,31,.4); }
+  .alerta.medio { background:rgba(217,154,43,.1); border:1px solid rgba(217,154,43,.35); }
+  .alerta b { display:block; font-size:.9rem; }
+  .alerta span { font-size:.76rem; color:var(--gris); }
+  .todobien { color:var(--verde); font-size:.9rem; display:flex; gap:9px; align-items:center; }
+
+  table { width:100%; border-collapse:collapse; font-size:.8rem; }
+  th { text-align:left; font-size:.66rem; letter-spacing:.1em; text-transform:uppercase;
+       color:var(--gris); font-weight:700; padding:0 10px 9px; }
+  td { padding:9px 10px; border-top:1px solid var(--borde); vertical-align:top; }
+  td.num { text-align:right; font-variant-numeric:tabular-nums; }
+  .pastilla { display:inline-block; font-size:.66rem; font-weight:700; padding:2px 8px;
+              border-radius:999px; letter-spacing:.02em; }
+  .pastilla.ok   { background:rgba(63,169,107,.18); color:#7FD1A8; }
+  .pastilla.esp  { background:rgba(217,154,43,.15); color:#E8BE72; }
+  .pastilla.mal  { background:rgba(193,18,31,.18); color:#F09098; }
+  code { font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:.9em;
+         background:rgba(251,243,231,.07); padding:1px 6px; border-radius:5px; }
+  .vacio { color:var(--gris); font-size:.82rem; padding:14px 10px; }
+  .dosCol { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  @media (max-width:820px) { .dosCol { grid-template-columns:1fr; } }
+
+  /* Puerta */
+  .puerta { position:fixed; inset:0; background:var(--fondo); display:flex;
+            align-items:center; justify-content:center; z-index:9; }
+  .puerta .caja { background:var(--panel); border:1px solid var(--borde);
+                  border-radius:16px; padding:28px; width:min(360px,90vw); text-align:center; }
+  .puerta h3 { font-size:1.05rem; margin-bottom:6px; }
+  .puerta p { font-size:.8rem; color:var(--gris); margin-bottom:16px; }
+  .puerta input { width:100%; padding:11px 14px; border-radius:10px; border:1px solid var(--borde);
+                  background:var(--panel2); color:var(--crema); font-family:inherit; font-size:.9rem; }
+  .puerta button { width:100%; margin-top:10px; padding:11px; border-radius:10px; border:0;
+                   background:var(--rojo); color:#fff; font-weight:700; font-family:inherit;
+                   font-size:.88rem; cursor:pointer; }
+  .puerta .err { color:#F09098; font-size:.76rem; margin-top:10px; min-height:1em; }
+  .oculto { display:none !important; }
+</style>
+</head>
+<body>
+
+<div class="puerta" id="puerta">
+  <div class="caja">
+    <h3>Orquestador de Botikin</h3>
+    <p>Panel interno. Necesitas la clave.</p>
+    <input type="password" id="clave" placeholder="Clave del panel" autocomplete="current-password">
+    <button id="entrar">Entrar</button>
+    <div class="err" id="err"></div>
+  </div>
+</div>
+
+<div class="marco oculto" id="panel">
+  <header>
+    <h1><img src="img/avatar.png" alt="">Orquestador</h1>
+    <div class="sello" id="sello">cargando…</div>
+  </header>
+
+  <div id="alertas"></div>
+
+  <h2>El circuito</h2>
+  <div class="circuito" id="circuito"></div>
+
+  <h2>Servicios</h2>
+  <div class="servicios" id="servicios"></div>
+
+  <h2>Uso</h2>
+  <div class="cifras" id="uso"></div>
+
+  <div class="dosCol">
+    <div>
+      <h2>Últimos pagos</h2>
+      <div class="tarjeta"><div id="pagos"></div></div>
+    </div>
+    <div>
+      <h2>Códigos sin canjear</h2>
+      <div class="tarjeta"><div id="pendientes"></div></div>
+    </div>
+  </div>
+
+  <h2>Casas</h2>
+  <div class="tarjeta"><div id="casas"></div></div>
+</div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const clp = (n) => "$" + (n ?? 0).toLocaleString("es-CL");
+const fecha = (s) => s ? new Date(s).toLocaleString("es-CL",
+  { day:"2-digit", month:"short", hour:"2-digit", minute:"2-digit" }) : "—";
+const desde = (s) => {
+  if (!s) return "—";
+  const h = Math.floor((Date.now() - Date.parse(s)) / 36e5);
+  if (h < 1) return "recién";
+  if (h < 24) return `hace ${h} h`;
+  const d = Math.floor(h / 24);
+  return `hace ${d} día${d === 1 ? "" : "s"}`;
+};
+const esc = (s) => String(s ?? "").replace(/[&<>]/g, (c) => ({ "&":"&amp;","<":"&lt;",">":"&gt;" }[c]));
+
+async function traer(clave) {
+  const r = await fetch("/api/panel", { headers: { "x-panel-clave": clave } });
+  if (r.status === 401) throw new Error("Clave incorrecta");
+  const d = await r.json();
+  if (d.error) throw new Error(d.error);
+  return d;
+}
+
+function pintar(d) {
+  $("sello").textContent = "actualizado " + fecha(d.generado);
+
+  // Alertas primero: lo que está mal se ve antes que lo que está bien.
+  $("alertas").innerHTML = d.alertas.length
+    ? d.alertas.map((a) => `<div class="alerta ${a.nivel}">
+        <div>${a.nivel === "alto" ? "🔴" : "🟠"}</div>
+        <div><b>${esc(a.texto)}</b><span>${esc(a.detalle ?? "")}</span></div></div>`).join("")
+    : `<div class="alerta medio" style="background:rgba(63,169,107,.1);border-color:rgba(63,169,107,.3)">
+         <div>🟢</div><div><b>Todo en orden</b><span>Ningún paso del circuito está roto.</span></div></div>`;
+
+  // El circuito: donde cae el número, algo se está perdiendo.
+  const max = Math.max(...d.circuito.map((p) => p.valor), 1);
+  $("circuito").innerHTML = d.circuito.map((p, i) => {
+    const previo = i > 0 ? d.circuito[i-1].valor : null;
+    const cae = previo !== null && p.valor < previo;
+    return `<div class="paso ${cae || p.alerta ? "cae" : ""}">
+      <div class="n">${esc(p.paso)}</div>
+      <div class="v">${p.valor}</div>
+      <div class="u">${esc(p.unidad)}${cae ? ` · se pierden ${previo - p.valor}` : ""}</div>
+      ${p.alerta ? `<div class="aviso">${esc(p.alerta)}</div>` : ""}
+    </div>`;
+  }).join("");
+
+  const k = d.servicios.kapso;
+  $("servicios").innerHTML = `
+    <div class="srv"><div class="luz ${d.servicios.supabase.ok?"si":"no"}"></div>
+      <div><b>Supabase</b><span>${esc(d.servicios.supabase.detalle)}</span></div></div>
+    <div class="srv"><div class="luz ${k.ok?"si":"no"}"></div>
+      <div><b>WhatsApp · ${esc(k.numero ?? "?")}</b>
+        <span>${esc(k.estado ?? k.detalle ?? "")} · se muestra como "${esc(k.nombre ?? "?")}"<br>
+        webhook ${k.apunta_a_nosotros ? "apunta a Botikin" : "NO apunta a Botikin"}</span></div></div>
+    <div class="srv"><div class="luz ${d.servicios.correo.ok?"si":"no"}"></div>
+      <div><b>Correo</b><span>${esc(d.servicios.correo.detalle)}</span></div></div>
+    <div class="srv"><div class="luz si"></div>
+      <div><b>Recaudado</b><span>${clp(d.dinero.recaudado)} en ${d.dinero.cobros} cobro${d.dinero.cobros===1?"":"s"}${d.dinero.fallidos?` · ${d.dinero.fallidos} fallido${d.dinero.fallidos===1?"":"s"}`:""}</span></div></div>`;
+
+  $("uso").innerHTML = [
+    ["Casas", d.uso.hogares], ["Personas", d.uso.integrantes],
+    ["Medicamentos", d.uso.medicamentos], ["Tratamientos", d.uso.tratamientos],
+    ["Recetas", d.uso.recetas], ["Mensajes hoy", d.uso.mensajesHoy],
+    ["Códigos vivos", d.codigos.emitidos - d.codigos.canjeados - d.codigos.vencidos],
+    ["Vencidos", d.codigos.vencidos],
+  ].map(([t,v]) => `<div class="cifra"><b>${v}</b><span>${t}</span></div>`).join("");
+
+  $("pagos").innerHTML = d.ultimosPagos.length ? `<table>
+    <tr><th>Orden</th><th>Correo</th><th class="num">Monto</th><th>Código</th></tr>
+    ${d.ultimosPagos.map((p) => `<tr>
+      <td><code>${esc(p.orden_flow)}</code><br><span style="color:var(--gris);font-size:.72rem">${fecha(p.pagado_el)} · ${esc(p.medio_pago ?? "")}</span></td>
+      <td>${esc(p.email ?? "—")}</td>
+      <td class="num">${clp(p.monto)}</td>
+      <td>${p.access_codes ? `<code>${esc(p.access_codes.code)}</code><br>
+        <span class="pastilla ${p.access_codes.status==="redeemed"?"ok":"esp"}">${p.access_codes.status==="redeemed"?"canjeado":"esperando"}</span>`
+        : '<span class="pastilla mal">sin código</span>'}</td></tr>`).join("")}
+    </table>` : '<div class="vacio">Ningún pago todavía.</div>';
+
+  $("pendientes").innerHTML = d.pendientes.length ? `<table>
+    <tr><th>Código</th><th>Correo</th><th>Emitido</th><th>Correo enviado</th></tr>
+    ${d.pendientes.map((c) => `<tr>
+      <td><code>${esc(c.code)}</code></td>
+      <td>${esc(c.email ?? "—")}</td>
+      <td>${desde(c.issued_at)}</td>
+      <td>${c.sent_at ? `<span class="pastilla ok">sí</span>` : `<span class="pastilla esp">a mano</span>`}</td>
+    </tr>`).join("")}</table>`
+    : '<div class="vacio">Ningún código esperando. Todos canjeados.</div>';
+
+  $("casas").innerHTML = d.casas.length ? `<table>
+    <tr><th>Teléfono</th><th>Estado</th><th class="num">Personas</th><th class="num">Medicamentos</th><th>Último mensaje</th></tr>
+    ${d.casas.map((c) => `<tr>
+      <td><code>${esc(c.telefono)}</code></td>
+      <td><span class="pastilla ${c.onboarding==="listo"?"ok":"esp"}">${c.onboarding==="listo"?"conversando":"sin conocer"}</span></td>
+      <td class="num">${c.personas}</td>
+      <td class="num">${c.medicamentos}</td>
+      <td>${desde(c.ultimoMensaje)}</td></tr>`).join("")}</table>`
+    : '<div class="vacio">Ninguna casa activa.</div>';
+}
+
+async function entrar(clave) {
+  try {
+    const d = await traer(clave);
+    sessionStorage.setItem("panelClave", clave);
+    $("puerta").classList.add("oculto");
+    $("panel").classList.remove("oculto");
+    pintar(d);
+    // Se refresca solo: es un panel de guardia, no una foto.
+    setInterval(async () => {
+      try { pintar(await traer(clave)); } catch (e) { $("sello").textContent = "error: " + e.message; }
+    }, 30000);
+  } catch (e) {
+    $("err").textContent = e.message;
+  }
+}
+
+$("entrar").onclick = () => entrar($("clave").value.trim());
+$("clave").onkeydown = (e) => { if (e.key === "Enter") $("entrar").click(); };
+
+const guardada = sessionStorage.getItem("panelClave");
+if (guardada) entrar(guardada); else $("clave").focus();
+</script>
+</body>
+</html>

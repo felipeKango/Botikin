@@ -101,3 +101,30 @@ Detalles que importan y no son obvios:
 - El agente igual tiene el inventario en su contexto, así que preguntar
   "¿qué tengo?" en medio de una conversación también funciona — con sus
   palabras, no con este formato.
+
+## Códigos de acceso — unificados
+
+Existían dos tablas de códigos. Se quedó **`access_codes`** (generador
+`gen_random_bytes` sin sesgo de módulo, emisión idempotente por correo) con el
+canje reescrito: `canjear_codigo(codigo, telefono)` crea el hogar con el
+teléfono **demostrado por el mensaje**, en vez de exigir `auth.uid()` como el
+original pensado para web.
+
+Formato `ABCD-EFGH`, alfabeto de 32 sin `I`, `O`, `0` ni `1`. Se acepta en
+minúscula, con o sin guión.
+
+Verificado: emisión idempotente ✓ · formato ✓ · canje ✓ · reúso rechazado ✓ ·
+teléfono ya activo ✓ · bloqueo a los 5 fallos ✓ · pago amarrado al hogar ✓
+
+## Panel de orquestación
+
+`https://botikin.app/admin` — clave en `PANEL_CLAVE`.
+
+La clave de Supabase vive en la función serverless (`landing/api/panel.js`),
+nunca en el navegador: el panel solo recibe números ya agregados.
+
+Muestra el circuito paso a paso (pago → código → correo → canje → hogar →
+botiquín con datos) y **marca dónde cae el número**, que es donde se está
+perdiendo gente. La alerta que más importa es *"pagó y no ha activado"*: es el
+fallo más caro del producto porque es silencioso — nadie reclama, simplemente
+no vuelve.
