@@ -87,19 +87,26 @@ transacción N° …"*.
 
 Sirve para cobrarle a alguien puntual, no para vender una suscripción.
 
-Lo que este producto necesita es **Flow Suscripciones**, que además resuelve
-el cobro mensual — un pago único tampoco se renueva solo. La integración es
-por API, en cuatro pasos:
+La solución es **generar una orden por persona** con `payment/create`: cada
+llamada devuelve un token nuevo, así que nadie puede consumir la orden de
+otro. Eso es lo que está implementado hoy.
+
+### El cobro todavía no se renueva solo
+
+La renovación automática necesita `customer/register` + `subscription/create`,
+y eso exige que la cuenta de Flow tenga **contrato de cargo automático**. Sin
+él, la API responde:
 
 ```
-plans/create        una vez: el plan de $3.990/mes
-customer/create     por cada persona que se suscribe
-customer/register   inscribe su tarjeta (Flow le muestra el formulario)
-subscription/create la amarra al plan y empieza a cobrar todos los meses
+7001 · Commerce has not automatic charge contract
 ```
 
-Cada suscriptor recibe su propia URL de registro de tarjeta, así que nunca
-hay un link compartido que se pueda consumir.
+Mientras no esté habilitado, cada mes hay que recobrar. Cuando lo esté, el
+flujo pasa a inscribir la tarjeta una vez y Flow cobra solo.
+
+**Dato del plan:** el plan `Botikin mensual` que existe en la cuenta trae un
+**período de prueba** — la primera factura sale en $0. Conviene revisarlo
+antes de activarlo, o el primer mes no se cobra.
 
 ### Por qué el código, y no el teléfono en el formulario
 

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es-CL">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Activar mi cuenta · Botikin</title>
+<meta name="description" content="Activa tu cuenta de Botikin: $3.990 al mes, toda la casa incluida.">
+<link rel="icon" href="img/avatar.png">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:"Poppins",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+       background:#4A0E12;color:#FBF3E7;min-height:100vh;display:flex;align-items:center;
+       justify-content:center;padding:24px;line-height:1.6}
+  .caja{background:#FBF3E7;color:#2B1114;border-radius:24px;padding:clamp(28px,5vw,44px);
+        max-width:460px;width:100%}
+  .marca{display:flex;align-items:center;gap:12px;margin-bottom:22px}
+  .marca img{width:44px;height:44px;border-radius:12px}
+  .marca b{font-size:1.15rem;font-weight:800}
+  h1{font-size:1.65rem;letter-spacing:-.025em;font-weight:800;line-height:1.12;margin-bottom:10px}
+  .bajada{color:#6B5A54;font-size:.96rem;margin-bottom:24px}
+  .precio{background:#F0E6D6;border-radius:14px;padding:16px 18px;margin-bottom:22px;
+          display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+  .precio b{font-size:1.5rem;font-weight:800;letter-spacing:-.02em}
+  .precio span{font-size:.82rem;color:#6B5A54}
+  label{display:block;font-size:.8rem;font-weight:700;margin-bottom:6px;letter-spacing:.01em}
+  input{width:100%;padding:13px 15px;border-radius:11px;border:1.5px solid #DCD0BE;
+        background:#fff;font-family:inherit;font-size:.95rem;margin-bottom:16px;color:#2B1114}
+  input:focus{outline:none;border-color:#C1121F}
+  button{width:100%;padding:15px;border-radius:999px;border:0;background:#C1121F;color:#fff;
+         font-weight:700;font-family:inherit;font-size:.98rem;cursor:pointer;transition:.15s}
+  button:hover:not(:disabled){background:#4A0E12}
+  button:disabled{opacity:.55;cursor:wait}
+  .err{color:#C1121F;font-size:.85rem;margin-top:14px;min-height:1.2em}
+  .fino{font-size:.78rem;color:#8A7A72;margin-top:18px;line-height:1.55}
+  .fino a{color:#C1121F}
+  ul{list-style:none;margin:0 0 22px;font-size:.9rem;color:#6B5A54}
+  li{padding-left:24px;position:relative;margin-bottom:7px}
+  li::before{content:"✓";position:absolute;left:0;color:#3FA96B;font-weight:800}
+</style>
+</head>
+<body>
+<div class="caja">
+  <div class="marca"><img src="img/avatar.png" alt=""><b>Botikin</b></div>
+  <h1>Activa tu cuenta</h1>
+  <p class="bajada">El botiquín de tu casa, por WhatsApp. Sin app que descargar.</p>
+
+  <div class="precio"><b>$3.990</b><span>CLP al mes · toda la casa · cancelas cuando quieras</span></div>
+
+  <ul>
+    <li>Registras un remedio con una foto</li>
+    <li>Te avisa 30 días antes de que venza</li>
+    <li>Te dice si ya lo tienes antes de que compres de nuevo</li>
+    <li>Recuerda cada toma y lee las recetas del médico</li>
+  </ul>
+
+  <form id="f">
+    <label for="nombre">¿Cómo te llamas?</label>
+    <input id="nombre" name="nombre" placeholder="Carmen" autocomplete="given-name" required>
+    <label for="email">Tu correo</label>
+    <input id="email" name="email" type="email" placeholder="carmen@correo.cl"
+           autocomplete="email" required>
+    <button id="b" type="submit">Continuar al pago</button>
+    <div class="err" id="err"></div>
+  </form>
+
+  <p class="fino">Te llevamos a Flow para inscribir tu tarjeta. Los datos de la
+     tarjeta los guarda Flow, nunca nosotros. Después te llega un código al
+     correo que le escribes a Botikin por WhatsApp.<br>
+     ¿Dudas? <a href="mailto:soporte@botikin.app">soporte@botikin.app</a></p>
+</div>
+
+<script>
+const f = document.getElementById("f"), b = document.getElementById("b"), err = document.getElementById("err");
+f.onsubmit = async (e) => {
+  e.preventDefault();
+  b.disabled = true; b.textContent = "Abriendo el pago…"; err.textContent = "";
+  try {
+    const r = await fetch("/api/suscribir", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        nombre: document.getElementById("nombre").value.trim(),
+        email: document.getElementById("email").value.trim(),
+      }),
+    });
+    const d = await r.json();
+    if (!r.ok) throw new Error(d.error ?? "No pudimos abrir el pago.");
+    location.href = d.url;
+  } catch (e) {
+    err.textContent = e.message;
+    b.disabled = false; b.textContent = "Continuar al pago";
+  }
+};
+</script>
+</body>
+</html>
