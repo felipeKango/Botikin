@@ -37,3 +37,6 @@ supabase/.temp/
 ~$*
 *.tmp
 .vercel
+
+# Respaldos de configuración con secretos
+MVP/.respaldos/
