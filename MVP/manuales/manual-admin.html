@@ -18,6 +18,7 @@
   h2 { font-size:17pt; letter-spacing:-.015em; font-weight:800; margin:0 0 4px; padding-top:6mm; }
   h2 .n { color:#C1121F; margin-right:8px; }
   h3 { font-size:11.5pt; font-weight:700; margin:15px 0 4px; }
+  .nota { font-size:8.5pt; color:#5a5a5a; margin-top:5px; }
   p { margin-bottom:9px; }
   .lead { color:#6B5A54; margin-bottom:14px; }
   section { margin-bottom:8mm; }
@@ -253,7 +254,34 @@ order by created_at;</pre>
 </section>
 
 <section>
-  <h2><span class="n">7</span>Lo que todavía falta</h2>
+  <h2><span class="n">7</span>Revisar una receta</h2>
+  <p class="lead">Lo más caro de equivocarse: una pauta mal leída se convierte
+     en recordatorios equivocados durante días.</p>
+
+  <h3>Cómo verificar que una receta se procesó bien</h3>
+  <p>Una receta bien leída deja rastro en tres tablas. Si falta una, algo se
+     cortó a mitad de camino:</p>
+  <table>
+    <tr><th>Tabla</th><th>Qué debe haber</th><th>Si está vacía…</th></tr>
+    <tr><td><code>recetas</code></td>
+        <td>Una fila con el médico y la fecha de atención.</td>
+        <td>El agente creó tratamientos sueltos sin registrar de dónde salieron.</td></tr>
+    <tr><td><code>tratamientos</code></td>
+        <td>Uno por medicamento, con su <code>duracion</code> correcta.</td>
+        <td>La lectura falló o la pauta era incoherente y la base la rechazó.</td></tr>
+    <tr><td><code>tomas</code></td>
+        <td>Una fila por dosis futura. Se generan <b>solas</b> al crear el
+            tratamiento.</td>
+        <td>Solo es normal en los <code>sos</code>: esos no llevan horario.</td></tr>
+  </table>
+  <p class="nota">Las tomas se programan con 14 días de horizonte. En un
+     tratamiento de permanencia eso se va extendiendo; en uno de días, se corta
+     en la fecha de término.</p>
+
+</section>
+
+<section>
+  <h2><span class="n">8</span>Lo que todavía falta</h2>
   <p class="lead">Deudas conocidas, en orden de urgencia.</p>
 
   <table>
@@ -263,16 +291,16 @@ order by created_at;</pre>
             cada mes hay que recobrar. Pedirle a Flow el contrato de cargo automático.</td></tr>
     <tr><td><b>Sin plantillas aprobadas por Meta</b></td>
         <td>El agente <b>no puede hablar primero</b>: fuera de la ventana de 24 horas
-            solo se permiten plantillas. Sin ellas no hay recordatorios de toma ni
-            avisos de vencimiento — que es la mitad del producto.</td></tr>
+            solo se permiten plantillas. <b>Las tomas ya se generan y quedan en la
+            base</b> (tabla <code>tomas</code>, en estado <code>pendiente</code>);
+            lo único que falta para que suenen es la plantilla aprobada. Es el
+            bloqueo más caro que tenemos: sin él no hay recordatorios de toma ni
+            avisos de vencimiento.</td></tr>
     <tr><td><b>El proceso diario de vencimientos</b></td>
         <td>Nadie revisa los vencimientos cada mañana todavía. Depende de lo anterior.</td></tr>
     <tr><td><b>Sin catálogo del ISP</b></td>
         <td>El agente detecta duplicados por coincidencia exacta de principio activo.
             Con el registro del ISP reconocería equivalencias entre marcas.</td></tr>
-    <tr><td><b>Las recetas no se guardan</b></td>
-        <td>Se leen y se crean los tratamientos, pero el documento original y el
-            nombre del médico no quedan archivados.</td></tr>
     <tr><td><b>Correo por SMTP</b></td>
         <td>Techo diario y sin registro de rebotes.</td></tr>
   </table>

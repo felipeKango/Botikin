@@ -70,7 +70,7 @@ export default async function handler(req, res) {
     const [
       pagos, codigos, hogares, mensajesHoy, medicamentos, integrantes,
       tratamientos, recetas, ultimosPagos, pendientes, casas, kapso,
-      vencidosArrastrados,
+      vencidosArrastrados, tomasPendientes, tratamientosSinTomas,
     ] = await Promise.all([
       filas("pagos?select=monto,estado,pagado_el"),
       filas("access_codes?select=status,issued_at,expires_at,email,code,sent_at"),
@@ -87,7 +87,16 @@ export default async function handler(req, res) {
       // Un tratamiento con fecha pasada que sigue "activo" es un aviso de
       // toma que puede salir por un tratamiento que ya terminó.
       contar("tratamientos", `estado=eq.activo&duracion=eq.dias&fecha_termino=lt.${hoy}`),
+      // Las tomas son el combustible de los recordatorios. Cero tomas
+      // pendientes con tratamientos activos significa que no hay nada
+      // que avisar aunque las plantillas se aprueben mañana.
+      contar("tomas", "estado=eq.pendiente"),
+      // Un tratamiento con horario que no generó tomas es una falla del
+      // orquestador: el trigger no corrió o la fecha de inicio ya pasó.
+      filas("tratamientos?select=id,tomas(id)&estado=eq.activo&duracion=neq.sos"),
     ]);
+
+    const sinTomas = tratamientosSinTomas.filter((t) => !t.tomas?.length).length;
 
     const exitosos = pagos.filter((p) => p.estado === "exitoso");
     const cuenta = (s) => codigos.filter((c) => c.status === s).length;
@@ -137,7 +146,8 @@ export default async function handler(req, res) {
           (c) => c.status !== "redeemed" && Date.parse(c.expires_at) < ahora).length,
       },
 
-      uso: { hogares, integrantes, medicamentos, tratamientos, recetas, mensajesHoy },
+      uso: { hogares, integrantes, medicamentos, tratamientos, recetas,
+             tomasPendientes, mensajesHoy },
 
       servicios: {
         supabase: { ok: true, detalle: "consultado en esta llamada" },
@@ -183,6 +193,12 @@ export default async function handler(req, res) {
                texto: `${vencidosArrastrados} tratamiento${vencidosArrastrados === 1 ? "" : "s"} terminado${vencidosArrastrados === 1 ? "" : "s"} sigue${vencidosArrastrados === 1 ? "" : "n"} marcado${vencidosArrastrados === 1 ? "" : "s"} como activo${vencidosArrastrados === 1 ? "" : "s"}`,
                detalle: "podría recordarse una toma de algo que ya se terminó · " +
                         "correr cerrar_tratamientos_vencidos()" }]
+          : []),
+        ...(sinTomas
+          ? [{ nivel: "alto",
+               texto: `${sinTomas} tratamiento${sinTomas === 1 ? "" : "s"} con horario no tiene tomas programadas`,
+               detalle: "esa persona no va a recibir ningún recordatorio · " +
+                        "correr generar_tomas() sobre cada uno" }]
           : []),
         // SMTP por buzón propio: sirve hoy, pero tiene techo y no avisa rebotes.
         ...(!process.env.RESEND_API_KEY && process.env.SMTP_PASSWORD

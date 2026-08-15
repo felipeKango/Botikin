@@ -77,6 +77,58 @@ export const HERRAMIENTAS = [
     },
   },
   {
+    name: "registrar_receta",
+    description:
+      "Guarda la receta ANTES de crear sus tratamientos, y devuelve su id para " +
+      "que se los cuelgues. Así queda registrado quién la firmó y de cuándo es. " +
+      "NO guardes RUT, dirección ni teléfono del paciente aunque vengan en el " +
+      "documento: no los necesitamos.",
+    input_schema: {
+      type: "object",
+      additionalProperties: false,
+      required: ["de_quien", "medico", "fecha_atencion"],
+      properties: {
+        de_quien: { type: "string", description: "Nombre del integrante" },
+        medico: { type: "string" },
+        centro: { type: "string" },
+        fecha_atencion: { type: "string", description: "AAAA-MM-DD" },
+      },
+    },
+  },
+  {
+    name: "revisar_en_botiquin",
+    description:
+      "Antes de decirle a alguien que compre algo, pregunta acá si ya lo tiene. " +
+      "Cruza por principio activo + concentración + forma. Úsalo para CADA " +
+      "medicamento de una receta: lo que ya está en casa no se compra de nuevo.",
+    input_schema: {
+      type: "object",
+      additionalProperties: false,
+      required: ["principio_activo", "concentracion", "forma"],
+      properties: {
+        principio_activo: { type: "string" },
+        concentracion: { type: "string" },
+        forma: { type: "string" },
+      },
+    },
+  },
+  {
+    name: "confirmar_toma",
+    description:
+      "Cuando la persona dice que se tomó el remedio ('listo', 'ya', 'se lo di'), " +
+      "confirma la toma: descuenta del stock y te dice cuánto queda. Si dice que " +
+      "NO se lo tomó, usa estado 'saltada' — no es lo mismo que no responder.",
+    input_schema: {
+      type: "object",
+      additionalProperties: false,
+      required: ["toma_id"],
+      properties: {
+        toma_id: { type: "string" },
+        estado: { type: "string", enum: ["confirmada", "saltada"] },
+      },
+    },
+  },
+  {
     name: "crear_tratamiento",
     description:
       "Registra una pauta que prescribió un médico. Respeta los tres tipos de " +
@@ -100,6 +152,7 @@ export const HERRAMIENTAS = [
         duracion_dias: { type: ["number", "null"] },
         fecha_inicio: { type: "string", description: "AAAA-MM-DD" },
         observaciones: { type: "string" },
+        receta_id: { type: "string", description: "El id que devolvió registrar_receta" },
       },
     },
   },
@@ -199,6 +252,43 @@ export async function ejecutar(
       };
     }
 
+    case "registrar_receta": {
+      const integrante = await integrantePorNombre(db, hogar, args.de_quien as string);
+      if (!integrante) return { error: `No conozco a ${args.de_quien} en esta casa` };
+      const { data, error } = await db.from("recetas").insert({
+        hogar_id: hogar,
+        integrante_id: integrante,
+        // El archivo lo guarda la puerta; acá queda lo que se leyó.
+        archivo_path: `recetas/${hogar}/${Date.now()}`,
+        medico: args.medico,
+        centro: args.centro ?? null,
+        fecha_atencion: args.fecha_atencion,
+        estado: "leida",
+      }).select("id").single();
+      return error ? { error: error.message } : { receta_id: data.id };
+    }
+
+    case "revisar_en_botiquin": {
+      const { data, error } = await db.rpc("cruzar_con_botiquin", {
+        p_hogar: hogar,
+        p_principio_activo: args.principio_activo,
+        p_concentracion: args.concentracion,
+        p_forma: args.forma,
+      });
+      if (error) return { error: error.message };
+      return (data ?? []).length
+        ? { ya_lo_tienes: true, cajas: data }
+        : { ya_lo_tienes: false, hay_que_comprarlo: true };
+    }
+
+    case "confirmar_toma": {
+      const { data, error } = await db.rpc("confirmar_toma", {
+        p_toma: args.toma_id,
+        p_estado: args.estado ?? "confirmada",
+      });
+      return error ? { error: error.message } : data;
+    }
+
     case "descartar_medicamento": {
       const { error } = await db.from("medicamentos").update({
         estado: args.motivo,
@@ -231,10 +321,39 @@ export async function ejecutar(
         fecha_inicio: inicio,
         fecha_termino: termino,
         observaciones: args.observaciones ?? null,
+        receta_id: args.receta_id ?? null,
       }).select("id, fecha_termino").single();
       // El CHECK de la base rechaza una pauta incoherente (sos con horario,
       // permanencia con término). Si llega acá, es un error del agente.
-      return error ? { error: error.message } : { guardado: data };
+      if (error) return { error: error.message };
+
+      // El cruce va en la misma respuesta: el agente no tiene que acordarse
+      // de preguntarlo aparte para saber si hay que comprarlo.
+      const { data: enCasa } = await db.rpc("cruzar_con_botiquin", {
+        p_hogar: hogar,
+        p_principio_activo: args.principio_activo,
+        p_concentracion: args.concentracion,
+        p_forma: args.forma,
+      });
+      // Si la caja ya está en casa, el tratamiento queda amarrado a ELLA —
+      // a la de vencimiento más próximo, que es la que hay que gastar primero.
+      // Sin ese vínculo, confirmar una toma no descontaría de ningún envase.
+      if ((enCasa ?? []).length) {
+        await db.from("tratamientos")
+          .update({ medicamento_id: enCasa[0].medicamento_id }).eq("id", data.id);
+      }
+
+      const { count: tomas } = await db.from("tomas")
+        .select("id", { count: "exact", head: true })
+        .eq("tratamiento_id", data.id).eq("estado", "pendiente");
+
+      return {
+        guardado: data,
+        ya_lo_tienes: (enCasa ?? []).length > 0,
+        cajas_en_casa: enCasa ?? [],
+        hay_que_comprarlo: (enCasa ?? []).length === 0,
+        tomas_programadas: tomas ?? 0,
+      };
     }
 
     default:

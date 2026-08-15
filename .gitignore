@@ -40,3 +40,4 @@ supabase/.temp/
 
 # Respaldos de configuración con secretos
 MVP/.respaldos/
+.env*

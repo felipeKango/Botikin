@@ -211,7 +211,8 @@ function pintar(d) {
   $("uso").innerHTML = [
     ["Casas", d.uso.hogares], ["Personas", d.uso.integrantes],
     ["Medicamentos", d.uso.medicamentos], ["Tratamientos", d.uso.tratamientos],
-    ["Recetas", d.uso.recetas], ["Mensajes hoy", d.uso.mensajesHoy],
+    ["Recetas", d.uso.recetas], ["Tomas por avisar", d.uso.tomasPendientes],
+    ["Mensajes hoy", d.uso.mensajesHoy],
     ["Códigos vivos", d.codigos.emitidos - d.codigos.canjeados - d.codigos.vencidos],
     ["Vencidos", d.codigos.vencidos],
   ].map(([t,v]) => `<div class="cifra"><b>${v}</b><span>${t}</span></div>`).join("");

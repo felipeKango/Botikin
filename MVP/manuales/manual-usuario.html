@@ -19,6 +19,8 @@
        padding-top:6mm; }
   h2 .n { color:#C1121F; margin-right:8px; }
   h3 { font-size:11.5pt; font-weight:700; margin:16px 0 4px; }
+  h4 { font-size:10pt; font-weight:700; margin:13px 0 3px; color:#0f5f52; }
+  .nota { font-size:8.5pt; color:#5a5a5a; margin-top:5px; }
   p { margin-bottom:9px; }
   .lead { color:#6B5A54; margin-bottom:14px; }
   section { margin-bottom:9mm; }
@@ -182,10 +184,58 @@
   </table>
 
   <h3>La receta del médico</h3>
-  <p>Mándale la foto o el PDF de la receta. Lee todas las páginas y separa los
-     tratamientos según lo que escribió el médico: los que son <b>de permanencia</b>
-     (no terminan), los que duran <b>unos días</b>, y los que son <b>SOS</b> —solo
-     si hay fiebre o dolor—, que no llevan horario.</p>
+  <p class="lead">Mándale la foto o el PDF. Si son varias páginas, mándalas todas
+     juntas: las lee como una sola receta.</p>
+  <p>Con la receta hace tres cosas, siempre en este orden.</p>
+
+  <h4>1. Lee cada medicamento</h4>
+  <p>Saca el principio activo, la concentración, cuánto se da, cada cuántas horas
+     y por cuánto tiempo. Ese último dato tiene tres formas, y no significan
+     lo mismo:</p>
+  <table>
+    <tr><th>Si la receta dice…</th><th>Lo que hace Botikin</th></tr>
+    <tr><td><b>por 5 Días</b></td>
+        <td>Cuenta los días desde el inicio y cierra el tratamiento solo cuando
+            corresponde.</td></tr>
+    <tr><td><b>por Permanencia</b></td>
+        <td>No es una duración: es un tratamiento crónico. Lo deja <b>sin fecha
+            de término</b>.</td></tr>
+    <tr><td><b>por SOS</b></td>
+        <td>Solo si aparece el síntoma. Lo deja <b>sin horario</b>, aunque el
+            papel diga "cada 6 horas" —ese número es lo mínimo que hay que
+            esperar entre una dosis y otra, no una pauta.</td></tr>
+  </table>
+
+  <h4>2. Revisa qué ya tienes en casa</h4>
+  <p>Antes de mandarte a la farmacia, cruza cada medicamento con tu botiquín. Lo
+     que ya está no se compra de nuevo.</p>
+
+  <div class="chat">
+    <div class="msg yo">llegamos del pediatra, te mando la receta</div>
+    <div class="msg">Receta del 15 de mayo, Dra. Fernández, para Bruno. Leí 4 medicamentos.<br><br>
+      <b>Ya los tienes:</b><br>
+      • Paracetamol 160 mg — te quedan 20 comprimidos<br>
+      • Fluticasona 125 mcg — vence 08/2027<br><br>
+      <b>Falta comprar:</b><br>
+      • Levodropropizina 30 mg/5 mL</div>
+  </div>
+  <p class="nota">Si lo que tienes en casa vence antes de que termine el
+     tratamiento, o no alcanza para completarlo, te lo dice ahí mismo.</p>
+
+  <h4>3. Recién ahí arma los horarios</h4>
+  <p>Te confirma cuántas tomas quedan programadas y desde cuándo. Los
+     recordatorios llegan en <b>tres bloques al día</b> —mañana, tarde y
+     noche—, no un mensaje por cada toma. Entre las 22:00 y las 8:00 no
+     escribe.</p>
+
+  <div class="chat">
+    <div class="msg">Programadas 👍<br><br>
+      • Levodropropizina — <b>15 tomas</b>, 3 al día hasta el 20 de mayo<br>
+      • Fluticasona — 2 al día, sin fecha de término<br><br>
+      El paracetamol queda sin horario: es SOS, lo tomas si hay fiebre.</div>
+  </div>
+  <p class="nota">Lo que no le confirmes queda como <i>sin confirmar</i>. No lo da
+     por tomado, y por eso el stock que te muestra es el de verdad.</p>
 </section>
 
 <section>

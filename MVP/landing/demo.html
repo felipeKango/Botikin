@@ -248,7 +248,14 @@ const GUION = [
       "<em>Ese no te lo voy a recordar por horario: es SOS.</em>" },
   { quien:"bot", t:"De los seis, el único que no tienes en casa es la <strong>levodropropizina</strong>. Los otros cinco ya están en tu botiquín.\n\n¿Te recuerdo las tomas?" },
   { quien:"yo",  t:"sí por favor" },
-  { quien:"bot", t:"Listo. Te escribo en tres bloques: mañana, tarde y noche.\n\nLo que no me confirmes queda como <em>sin confirmar</em> — no lo doy por tomado." },
+  { quien:"bot", t:() =>
+      "Programadas 👍\n\n" +
+      `• Levodropropizina — <strong>15 tomas</strong>, 3 al día hasta el ${fmt(F.terminaTos)}\n` +
+      `• Betametasona — <strong>15 tomas</strong>, hasta el ${fmt(F.terminaTos)}\n` +
+      "• Fluticasona (las dos) — 2 al día, sin fecha de término\n" +
+      "• Levocetirizina — 1 al día, sin fecha de término\n\n" +
+      "El paracetamol queda sin horario: es SOS." },
+  { quien:"bot", t:"Te escribo en tres bloques: mañana, tarde y noche —no un mensaje por toma.\n\nLo que no me confirmes queda como <em>sin confirmar</em>: no lo doy por tomado, y por eso el stock que te digo es el de verdad." },
 
   { cap: 5, quien:"dia", t:`${fmt(enDias(6)).toUpperCase()}` },
   { quien:"yo",  t:"Botikin" },

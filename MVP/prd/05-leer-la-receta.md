@@ -184,12 +184,63 @@ CUANDO tenemos la lectura
 
   ENTONCES resumimos en un mensaje: cuántos tratamientos,
            cuáles terminan y cuándo, y qué falta comprar.
-           Y preguntamos si empezamos con los recordatorios.
+
+
+CUANDO el tratamiento queda guardado
+
+  las TOMAS nacen con él. No se piden aparte, no dependen de que
+  alguien se acuerde: un tratamiento sin tomas es una anotación,
+  y las anotaciones no le recuerdan nada a nadie.
+
+  ¿es SOS?  → CERO tomas. Se toma si aparece el síntoma.
+              Inventarle un horario sería inventar una pauta
+              que el médico no escribió.
+
+  ¿tiene horario? → una toma por cada dosis futura,
+                    hasta la fecha de término (o 14 días
+                    hacia adelante si es de permanencia)
+
+  ¿la casa ya tenía el remedio? → el tratamiento queda amarrado
+                                  a ESE envase, al de vencimiento
+                                  más próximo, que es el que hay
+                                  que gastar primero
+
+  ENTONCES confirmamos en números: cuántas tomas quedaron,
+           cuántas por día, y hasta cuándo.
+
+
+CUANDO alguien confirma una toma
+
+  descontamos del envase y decimos cuánto queda.
+  Lo que NO se confirma no se descuenta: no sabemos si se tomó,
+  y suponer que sí convierte el stock en una mentira.
 ```
+
+### A qué hora suena
+
+Los horarios **no se reparten matemáticamente**. Una pauta de "cada 8 horas"
+repartida exacta cae a las 00:00, y despertar a una guagua para un jarabe para
+la tos es peor medicina que darlo un poco antes.
+
+Se reparte dentro de las horas de vigilia, respetando el silencio nocturno del
+PRD 06:
+
+| Cada | Suena a las |
+|---|---|
+| 24 h | 08:00 |
+| 12 h | 08:00 · 20:00 |
+| 8 h  | 08:00 · 15:00 · 22:00 |
+| 6 h  | 08:00 · 13:00 · 18:00 · 22:00 |
+
+La dosis y el intervalo que el agente **repite** son siempre los del médico.
+Esto solo decide a qué hora avisamos.
 
 **Promesas:**
 - se leen todas las páginas, siempre
 - una pauta incompleta se pregunta, nunca se completa sola
 - permanencia, días y SOS son tres cosas distintas y se tratan distinto
 - la dosis que guardamos es la que escribió el médico, textual
+- **antes de mandar a comprar, se revisa lo que ya hay en casa**
+- **un tratamiento con horario nace con sus tomas; un SOS nace sin ninguna**
+- una toma sin confirmar no descuenta stock
 - el RUT y la dirección del documento no se guardan
